@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MiAlmanake — Diario de Emociones</title>
+    <meta name="description" content="Registra y reflexiona sobre tus emociones diarias" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <a class="brand" href="index.html">MiAlmanake</a>
+        <nav class="site-nav" aria-label="Principal">
+          <ul>
+            <li><a href="index.html#inicio">Inicio</a></li>
+            <li><a href="index.html#caracteristicas">Características</a></li>
+            <li><a href="index.html#contacto">Contacto</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="diario-emociones" class="section journal emociones">
+      <section class="hero">
+        <div class="container">
+          <h1>Diario de Emociones</h1>
+          <p>Registra cómo te sientes y descubre patrones en tu bienestar.</p>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <form class="journal-form" action="#" method="post">
+            <label for="fecha">Fecha</label>
+            <input id="fecha" name="fecha" type="date" />
+
+            <label for="estado">¿Cómo te sientes hoy?</label>
+            <select id="estado" name="estado">
+              <option value="muy-bien">Muy bien</option>
+              <option value="bien">Bien</option>
+              <option value="neutral">Neutral</option>
+              <option value="triste">Triste</option>
+              <option value="ansioso">Ansioso/a</option>
+            </select>
+
+            <label for="descripcion">Describe tus emociones</label>
+            <textarea id="descripcion" name="descripcion" rows="6" placeholder="Escribe lo que sientes, posibles causas y qué te ayuda..."></textarea>
+
+            <div class="actions">
+              <a class="btn" href="index.html#caracteristicas">Volver</a>
+              <button class="btn primary" type="submit">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>© <span id="year"></span> MiAlmanake. Todos los derechos reservados.</p>
+      </div>
+    </footer>
+
+    <script src="js/main.js" defer></script>
+  </body>
+  </html>
+

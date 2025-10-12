@@ -36,17 +36,47 @@
       <section id="caracteristicas" class="features">
         <div class="container grid-3">
           <article>
-            <h2>Rápido</h2>
-            <p>Estructura simple y optimizada para cargar rápido.</p>
+            <h2>Diario de EMOCIONES</h2>
+            <p>Registra tus sentimientos, reflexiona y observa tu bienestar.</p>
+            <a class="btn primary" href="#diario-emociones">Entrar</a>
           </article>
           <article>
-            <h2>Responsivo</h2>
-            <p>Se adapta a móviles, tabletas y escritorios.</p>
+            <h2>Diario de RETOS</h2>
+            <p>Define objetivos, supera obstáculos y sigue tu progreso diario.</p>
+            <a class="btn primary" href="#diario-retos">Entrar</a>
           </article>
-          <article>
-            <h2>Escalable</h2>
-            <p>Fácil de extender con componentes y utilidades.</p>
-          </article>
+        </div>
+      </section>
+
+      <section id="diario-emociones" class="section journal emociones">
+        <div class="container">
+          <h2>Diario de Emociones</h2>
+          <p>Registra cómo te sientes cada día y descubre patrones en tu bienestar.</p>
+          <form class="journal-form" action="#diario-emociones" method="post">
+            <label for="emocion">¿Cómo te sientes hoy?</label>
+            <textarea id="emocion" name="emocion" rows="5" placeholder="Escribe tus emociones..."></textarea>
+            <div class="actions">
+              <a class="btn" href="#caracteristicas">Volver</a>
+              <button class="btn primary" type="submit">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section id="diario-retos" class="section journal retos">
+        <div class="container">
+          <h2>Diario de Retos</h2>
+          <p>Define tus desafíos, registra avances y celebra logros.</p>
+          <form class="journal-form" action="#diario-retos" method="post">
+            <label for="reto">Tu reto de hoy</label>
+            <input id="reto" name="reto" type="text" placeholder="Ej. Caminar 10,000 pasos" />
+            <label for="nota-reto">Notas</label>
+            <textarea id="nota-reto" name="nota_reto" rows="4" placeholder="Detalles, obstáculos o ideas..."></textarea>
+            <div class="actions">
+              <a class="btn" href="#caracteristicas">Volver</a>
+              <button class="btn primary" type="submit">Guardar</button>
+            </div>
+          </form>
         </div>
       </section>
     </main>
@@ -60,4 +90,3 @@
     <script src="js/main.js" defer></script>
   </body>
   </html>
-

@@ -7,13 +7,6 @@
     <meta name="description" content="Calendario para registrar y reflexionar sobre tus emociones diarias" />
     <link rel="stylesheet" href="css/styles.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      /* Overrides específicos de esta página: textos en negro */
-      .site-header .brand { color: #000 !important; }
-      .site-nav a { color: #000 !important; }
-      .site-nav a:hover { color: #111827 !important; }
-      .hero h1, .hero p { color: #000 !important; }
-    </style>
   </head>
   <body>
     <header class="site-header">
@@ -76,65 +69,6 @@
         const wd = new Date(y, m, d).getDay();
         return wd === 0 || wd === 6; // domingo o sábado
       };
-      // Fecha legible en español: 1 de Octubre de 2025
-      const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
-      function humanDateFromKey(key) {
-        if (!key) return '';
-        const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(key);
-        if (!m) return key;
-        const y = parseInt(m[1], 10);
-        const mo = parseInt(m[2], 10) - 1;
-        const d = parseInt(m[3], 10);
-        const dt = new Date(y, mo, d);
-        const monthLong = new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(dt);
-        return `${d} de ${capitalize(monthLong)} de ${y}`;
-      }
-      // Festivos nacionales (España) MM-DD: fijos + Viernes Santo (variable por año)
-      function easterSunday(y) {
-        // Algoritmo de la Pascua (Calendario gregoriano)
-        const a = y % 19;
-        const b = Math.floor(y / 100);
-        const c = y % 100;
-        const d = Math.floor(b / 4);
-        const e = b % 4;
-        const f = Math.floor((b + 8) / 25);
-        const g = Math.floor((b - f + 1) / 3);
-        const h = (19 * a + b - d - g + 15) % 30;
-        const i = Math.floor(c / 4);
-        const k = c % 4;
-        const l = (32 + 2 * e + 2 * i - h - k) % 7;
-        const m2 = Math.floor((a + 11 * h + 22 * l) / 451);
-        const month = Math.floor((h + l - 7 * m2 + 114) / 31); // 3=Marzo, 4=Abril
-        const day = ((h + l - 7 * m2 + 114) % 31) + 1;
-        return new Date(y, month - 1, day);
-      }
-      function goodFriday(y) {
-        const easter = easterSunday(y);
-        const gf = new Date(easter);
-        gf.setDate(gf.getDate() - 2);
-        return gf;
-      }
-      const HOLIDAYS_CACHE = new Map();
-      function nationalHolidaysForYear(y) {
-        if (HOLIDAYS_CACHE.has(y)) return HOLIDAYS_CACHE.get(y);
-        const set = new Set([
-          '01-01', // Año Nuevo
-          '01-06', // Epifanía del Señor
-          '05-01', // Día del Trabajador
-          '08-15', // Asunción de la Virgen
-          '10-12', // Fiesta Nacional de España
-          '11-01', // Todos los Santos
-          '12-06', // Día de la Constitución
-          '12-08', // Inmaculada Concepción
-          '12-25', // Natividad del Señor (Navidad)
-        ]);
-        // Añadir Viernes Santo (variable, nacional)
-        const gf = goodFriday(y);
-        set.add(`${pad(gf.getMonth() + 1)}-${pad(gf.getDate())}`);
-        HOLIDAYS_CACHE.set(y, set);
-        return set;
-      }
-      const isNationalHoliday = (y, m, d) => nationalHolidaysForYear(y).has(`${pad(m + 1)}-${pad(d)}`);
 
       // ID único robusto
       function makeId() {
@@ -142,7 +76,7 @@
         return `id_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
       }
 
-      // Paleta de emojis arrastrables (3 emociones)
+      // Paleta reducida de emojis arrastrables (caritas)
       const EMOJI_PALETTE = ["😀", "😐", "😢"];
 
       // Emociones con color semántico
@@ -155,19 +89,18 @@
         { name: "Alegría", color: "#eab308" }      // Amarillo
       ];
 
-      // Opciones de Vínculo (cajitas blancas, reordenado y ampliado)
+      // Opciones de Vínculo (cajitas blancas)
       const VINCULO_OPTIONS = [
-        "Familia", "Pareja", "Amigos", "Trabajo", "Estudios", "Ocio", "Salud", "Dinero",
-        "Mascotas", "Ambiente", "Clima", "Actualidad", "Creencias", "Desconocido", "Sexo"
+        "Familia", "Pareja", "Trabajo", "Ocio", "Creencias", "Amigos", "Desconocido",
+        "Clima", "Ambiente", "Dinero", "Actualidad", "Mascotas", "Sexo"
       ];
 
-      // Asocia un emoji a cada vínculo (actualizado y ampliado)
+      // Asocia un emoji a cada vínculo (actualizado)
       function vinculoEmoji(v) {
         const map = {
           "Familia": "👪",
           "Pareja": "❤️",
           "Trabajo": "💼",
-          "Estudios": "📚",
           "Ocio": "🎉",
           "Creencias": "✝️",
           "Amigos": "👥",
@@ -177,7 +110,6 @@
           "Dinero": "💰",
           "Actualidad": "🗞️",
           "Mascotas": "🐶",
-          "Salud": "🩺",
           "Sexo": "💋",
         };
         return map[v] || "❓";
@@ -204,22 +136,6 @@
         const L = 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
         return L > 0.5 ? "#111827" : "#ffffff";
       }
-      function clamp01(x) { return Math.max(0, Math.min(1, x)); }
-      function toHex2(n) { const s = n.toString(16); return s.length === 1 ? '0' + s : s; }
-      function parseHex(hex) {
-        const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        if (!m) return null;
-        return { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) };
-      }
-      function darkenHex(hex, amount = 0.2) {
-        const rgb = parseHex(hex);
-        if (!rgb) return hex;
-        const k = clamp01(1 - amount);
-        const r = Math.round(rgb.r * k);
-        const g = Math.round(rgb.g * k);
-        const b = Math.round(rgb.b * k);
-        return `#${toHex2(r)}${toHex2(g)}${toHex2(b)}`;
-      }
       function monthThemeColor(data, year, month) {
         const counts = new Map();
         for (let d = 1; d <= daysInMonth(year, month); d++) {
@@ -230,28 +146,6 @@
         let top = null, max = 0;
         counts.forEach((v, k) => { if (v > max) { max = v; top = k; } });
         return top; // puede ser null
-      }
-
-      // Cuenta de colores por mes
-      function countColorsMonth(data, year, month) {
-        const counts = new Map();
-        for (let d = 1; d <= daysInMonth(year, month); d++) {
-          const key = dateKey(new Date(year, month, d));
-          const rec = data[key]?.[0];
-          if (rec?.color) counts.set(rec.color, (counts.get(rec.color) || 0) + 1);
-        }
-        return counts;
-      }
-
-      // Cuenta de vínculos por mes (Áreas de vida)
-      function countVinculosMonth(data, year, month) {
-        const counts = new Map();
-        for (let d = 1; d <= daysInMonth(year, month); d++) {
-          const key = dateKey(new Date(year, month, d));
-          const rec = data[key]?.[0];
-          if (rec?.vinculo) counts.set(rec.vinculo, (counts.get(rec.vinculo) || 0) + 1);
-        }
-        return counts;
       }
 
       // === Estado por día: forzar un solo registro ===
@@ -267,9 +161,9 @@
 
       // === Etiqueta textual para el emoticono ===
       function emojiMoodLabel(emoji) {
-        if (emoji === "😀") return "contento";
+        if (emoji === "😀") return "muy contento";
         if (emoji === "😢") return "triste";
-        return "neutro"; // por defecto (😐)
+        return "neutro"; // por defecto
       }
 
       // === UI: Chips blancos reutilizables ===
@@ -298,12 +192,12 @@
       }
 
       // Editor de un registro
-      function RecordEditor({ record, onChange }) {
+      function RecordEditor({ record, onChange, onDelete }) {
         return (
           <div className="flex flex-col gap-4">
-            {/* ¿CÓMO LA SIENTES? */}
+            {/* Emoticono */}
             <div className="flex items-center gap-3 flex-wrap">
-              <label className="text-sm font-medium text-slate-700">¿CÓMO LA SIENTES?</label>
+              <label className="text-sm font-medium text-slate-700">Emoticono</label>
               <div className="flex gap-2">
                 {EMOJI_PALETTE.map((em) => (
                   <button
@@ -318,9 +212,9 @@
               </div>
             </div>
 
-            {/* ¿QUÉ SIENTES? */}
+            {/* Emoción / Color */}
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-slate-700">¿QUÉ SIENTES?</label>
+              <label className="text-sm font-medium text-slate-700">Emoción / Color</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {MOOD_COLORS.map((m) => (
                   <button
@@ -337,9 +231,9 @@
               </div>
             </div>
 
-            {/* ¿DÓNDE LA SIENTES? */}
+            {/* Vínculo */}
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-slate-700">¿DÓNDE LA SIENTES?</label>
+              <label className="text-sm font-medium text-slate-700">Vínculo</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {VINCULO_OPTIONS.map((v) => (
                   <button
@@ -356,15 +250,21 @@
               </div>
             </div>
 
-            {/* CUENTA ALGO MAS */}
+            {/* Comentario */}
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">CUENTA ALGO MAS</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Comentario</label>
               <textarea
                 value={record.comment || ''}
                 onChange={(e) => onChange({ ...record, comment: e.target.value })}
                 className="h-24 w-full resize-none rounded-lg border border-slate-300 p-2"
                 placeholder="Escribe un comentario opcional..."
               />
+            </div>
+
+            <div className="flex justify-between">
+              <button onClick={onDelete} className="rounded-xl bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 ring-1 ring-rose-200 hover:bg-rose-100" type="button">
+                Eliminar registro
+              </button>
             </div>
           </div>
         );
@@ -388,29 +288,23 @@
               )}
 
               {local && (
-                <>
-                  <div className="rounded-2xl bg-slate-50 p-3 ring-1 ring-slate-200">
-                    <RecordEditor
-                      record={local}
-                      onChange={(r) => setLocal(r)}
-                    />
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <button onClick={() => { onChangeRecord(null); onClose(); }} className="rounded-xl bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 ring-1 ring-rose-200 hover:bg-rose-100" type="button">
-                      Eliminar registro
-                    </button>
-                    <button
-                      onClick={() => { onChangeRecord(local); onClose(); }}
-                      className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
-                      type="button"
-                      disabled={!local}
-                    >
-                      Guardar
-                    </button>
-                  </div>
-                </>
+                <div className="rounded-2xl bg-slate-50 p-3 ring-1 ring-slate-200">
+                  <RecordEditor
+                    record={local}
+                    onChange={(r) => setLocal(r)}
+                    onDelete={() => setLocal(null)}
+                  />
+                </div>
               )}
+
+              <button
+                onClick={() => { onChangeRecord(local); onClose(); }}
+                className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
+                type="button"
+                disabled={!local}
+              >
+                Guardar
+              </button>
             </div>
           </Modal>
         );
@@ -481,63 +375,10 @@
         const monthName = useMemo(() => new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(new Date(year, month, 1)), [year, month]);
         const monthColor = monthThemeColor(data, year, month);
 
-        // Tema dinámico de la página a partir del color dominante del mes
-        useEffect(() => {
-          const styleId = 'dynamic-theme';
-          let styleEl = document.getElementById(styleId);
-          if (!styleEl) { styleEl = document.createElement('style'); styleEl.id = styleId; document.head.appendChild(styleEl); }
-
-          if (!monthColor) {
-            styleEl.textContent = '';
-            return;
-          }
-
-          const primary = monthColor;
-          const primary700 = darkenHex(primary, 0.25);
-          const headerBg = hexToRgba(primary, 0.25);
-          const borderTone = hexToRgba(primary, 0.25);
-          const rad1 = hexToRgba(primary, 0.15);
-          const rad2 = hexToRgba(primary, 0.12);
-          const baseBg = hexToRgba(primary, 0.10);
-
-          styleEl.textContent = `
-            :root{ --primary: ${primary}; --primary-700: ${primary700}; }
-            body{ background: radial-gradient(1200px 1200px at 10% -10%, ${rad1}, transparent 60%),
-                          radial-gradient(1000px 1000px at 110% 0%, ${rad2}, transparent 50%),
-                          ${baseBg}; }
-            .site-header{ background: ${headerBg}; border-bottom-color: ${borderTone}; }
-            .grid-3 article{ border-color: ${borderTone}; }
-            .btn.primary{ background: linear-gradient(135deg, ${primary}, ${primary700}); }
-            .site-footer{ border-top-color: ${borderTone}; }
-          `;
-        }, [monthColor]);
-
         const totalDays = daysInMonth(year, month);
         const firstWeekday = firstDayOfMonth(year, month); // 0=domingo
         const leadingEmpty = (firstWeekday + 6) % 7; // lunes=0
         const weekdayLabels = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
-
-        // Resumen mensual por color
-        const colorCounts = useMemo(() => countColorsMonth(data, year, month), [data, year, month]);
-        const totalRegMes = useMemo(() => {
-          let s = 0; colorCounts.forEach((v) => { s += v; }); return s;
-        }, [colorCounts]);
-        const summaryRank = useMemo(() => {
-          return MOOD_COLORS
-            .map((m) => ({ ...m, count: colorCounts.get(m.color) || 0 }))
-            .sort((a, b) => (b.count - a.count) || a.name.localeCompare(b.name));
-        }, [colorCounts]);
-        const summaryNonZero = useMemo(() => summaryRank.filter((m) => m.count > 0), [summaryRank]);
-
-        // Resumen mensual por vínculo (Top 5)
-        const vincCounts = useMemo(() => countVinculosMonth(data, year, month), [data, year, month]);
-        const summaryVincTop5 = useMemo(() => {
-          return VINCULO_OPTIONS
-            .map((v) => ({ name: v, count: vincCounts.get(v) || 0 }))
-            .filter((x) => x.count > 0)
-            .sort((a, b) => (b.count - a.count) || a.name.localeCompare(b.name))
-            .slice(0, 5);
-        }, [vincCounts]);
 
         const goPrev = () => { const d = new Date(year, month - 1, 1); setYear(d.getFullYear()); setMonth(d.getMonth()); };
         const goNext = () => { const d = new Date(year, month + 1, 1); setYear(d.getFullYear()); setMonth(d.getMonth()); };
@@ -551,7 +392,6 @@
         const closeDayEditor = () => setEditorDay(null);
 
         const editorRecord = editorDay ? (data[editorDay] && data[editorDay][0]) || null : null;
-        const editorDayHuman = useMemo(() => humanDateFromKey(editorDay), [editorDay]);
         const saveEditorRecord = (rec) => setData((prev) => setSingleRecord(prev, editorDay, rec));
 
         const todayKey = dateKey(new Date());
@@ -568,88 +408,39 @@
               <button onClick={goNext} className="rounded-2xl bg-white/80 px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-slate-200 hover:bg-white" style={{ color: '#111827' }}>Mes siguiente →</button>
             </div>
 
-            {/* Paleta + Resumen mensual */}
-            <div className="mx-auto mb-4 max-w-4xl grid gap-3 md:grid-cols-3">
-              {/* Paleta de emojis arrastrables */}
-              <div className="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200">
-                <div className="mb-1 px-1 text-xs font-medium text-slate-500">¿CÓMO LA SIENTES?</div>
-                <div className="flex flex-wrap gap-2">
-                  {EMOJI_PALETTE.map((em) => (
-                    <div
-                      key={em}
-                      draggable
-                      onDragStart={(e) => { setDragEmoji(em); e.dataTransfer.setData('text/plain', em); }}
-                      onDragEnd={() => setDragEmoji(null)}
-                      className={`cursor-grab select-none rounded-xl px-2 py-1 text-xl hover:bg-slate-100 ${dragEmoji === em ? 'ring-2 ring-slate-400' : ''}`}
-                      title="Arrastra al calendario"
-                    >
-                      {em}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Resumen mensual por color */}
-              <div className="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200">
-                <div className="mb-2 flex items-center justify-between">
-                  <div className="px-1 text-xs font-medium text-slate-500">Resumen Mensual EMOCIONES</div>
-                  <div className="px-1 text-xs font-semibold text-slate-700">Total: {totalRegMes}</div>
-                </div>
-                <div className="flex flex-col gap-1">
-                  {summaryNonZero.length > 0 ? (
-                    summaryNonZero.map((m) => (
-                      <div key={m.name} className="flex items-center justify-between rounded-lg px-2 py-1 hover:bg-slate-50">
-                        <div className="flex items-center gap-2">
-                          <span className="inline-block h-3.5 w-3.5 rounded-full ring-1 ring-black/10" style={{ background: m.color }} />
-                          <span className="text-sm text-slate-700">{m.name}</span>
-                        </div>
-                        <span className="text-sm font-mono text-slate-800">+{m.count}</span>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="px-2 py-1 text-sm text-slate-500">Sin registros en {monthName}</div>
-                  )}
-                </div>
-              </div>
-
-              {/* Resumen mensual Áreas de Vida (Top 5 vínculos) */}
-              <div className="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200">
-                <div className="mb-2 flex items-center justify-between">
-                  <div className="px-1 text-xs font-medium text-slate-500">Resumen Mensual AREAS de VIDA</div>
-                  <div className="px-1 text-xs font-semibold text-slate-700">Total: {totalRegMes}</div>
-                </div>
-                <div className="flex flex-col gap-1">
-                  {summaryVincTop5.length > 0 ? (
-                    summaryVincTop5.map((v) => (
-                      <div key={v.name} className="flex items-center justify-between rounded-lg px-2 py-1 hover:bg-slate-50">
-                        <div className="flex items-center gap-2">
-                          <span className="text-base leading-none">{vinculoEmoji(v.name)}</span>
-                          <span className="text-sm text-slate-700">{v.name}</span>
-                        </div>
-                        <span className="text-sm font-mono text-slate-800">+{v.count}</span>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="px-2 py-1 text-sm text-slate-500">Sin registros en {monthName}</div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Cabecera días de la semana (dinámica como la del mes) */}
-            <div
-              className="max-w-4xl mx-auto mb-1 rounded-2xl ring-1 ring-slate-200 px-3 py-1"
-              style={{ background: monthColor ? monthColor : '#ffffff', color: monthColor ? getContrastText(monthColor) : '#111827' }}
-            >
-              <div className="grid grid-cols-7 text-center text-sm font-semibold">
-                {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((w) => (
-                  <div key={w} className="py-0.5">{w}</div>
+            {/* Paleta de emojis arrastrables */}
+            <div className="mx-auto mb-4 max-w-4xl rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200">
+              <div className="mb-1 px-1 text-xs font-medium text-slate-500">Paleta</div>
+              <div className="flex flex-wrap gap-2">
+                {EMOJI_PALETTE.map((em) => (
+                  <div
+                    key={em}
+                    draggable
+                    onDragStart={(e) => { setDragEmoji(em); e.dataTransfer.setData('text/plain', em); }}
+                    onDragEnd={() => setDragEmoji(null)}
+                    className={`cursor-grab select-none rounded-xl px-2 py-1 text-xl hover:bg-slate-100 ${dragEmoji === em ? 'ring-2 ring-slate-400' : ''}`}
+                    title="Arrastra al calendario"
+                  >
+                    {em}
+                  </div>
                 ))}
               </div>
             </div>
 
             {/* Grid del calendario */}
             <div className="grid grid-cols-7 gap-1 max-w-4xl mx-auto">
+              {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((w) => {
+                const isWknd = w === 'S' || w === 'D';
+                return (
+                  <div
+                    key={w}
+                    className={`text-center text-sm font-medium border-b pb-1 ${isWknd ? 'text-indigo-600' : 'text-slate-500'}`}
+                    title={isWknd ? 'Fin de semana' : 'Día laborable'}
+                  >
+                    {w}
+                  </div>
+                );
+              })}
               {Array.from({ length: ((firstWeekday + 6) % 7) }).map((_, i) => <div key={`empty-${i}`} />)}
               {Array.from({ length: daysInMonth(year, month) }).map((_, i) => {
                 const day = i + 1;
@@ -658,7 +449,6 @@
                 const isToday = dKey === todayKey;
                 const isWeekend = isWeekendDate(year, month, day);
                 const bg = rec?.color ? hexToRgba(rec.color, 0.18) : '#ffffff';
-                const isHoliday = isNationalHoliday(year, month, day);
                 return (
                   <div
                     key={dKey}
@@ -668,7 +458,7 @@
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={(e) => { e.preventDefault(); const em = e.dataTransfer.getData('text/plain') || dragEmoji; if (em) onDropEmojiToDate(dKey, em); }}
                   >
-                    <div className={`absolute right-2 top-2 font-bold text-base ${isHoliday ? 'text-red-600' : 'text-black'}`}>{day}</div>
+                    <div className="absolute right-2 top-2 text-xs text-slate-600">{day}</div>
 
                     <div className="mt-5 flex w-full flex-col items-center gap-1">
                       {rec ? (
@@ -707,7 +497,7 @@
             <DayEditor
               open={!!editorDay}
               onClose={closeDayEditor}
-              dateLabel={editorDayHuman || ''}
+              dateLabel={editorDay || ''}
               record={editorRecord}
               onChangeRecord={saveEditorRecord}
             />
@@ -726,3 +516,4 @@
     <script src="js/main.js" defer></script>
   </body>
   </html>
+

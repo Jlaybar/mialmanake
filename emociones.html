@@ -4,8 +4,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>MiAlmanake — Diario de Emociones</title>
-    <meta name="description" content="Registra y reflexiona sobre tus emociones diarias" />
+    <meta name="description" content="Calendario para registrar y reflexionar sobre tus emociones diarias" />
     <link rel="stylesheet" href="css/styles.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Overrides específicos de esta página: textos en negro */
+      .site-header .brand { color: #000 !important; }
+      .site-nav a { color: #000 !important; }
+      .site-nav a:hover { color: #111827 !important; }
+      .hero h1, .hero p { color: #000 !important; }
+    </style>
   </head>
   <body>
     <header class="site-header">
@@ -31,27 +39,8 @@
 
       <section>
         <div class="container">
-          <form class="journal-form" action="#" method="post">
-            <label for="fecha">Fecha</label>
-            <input id="fecha" name="fecha" type="date" />
-
-            <label for="estado">¿Cómo te sientes hoy?</label>
-            <select id="estado" name="estado">
-              <option value="muy-bien">Muy bien</option>
-              <option value="bien">Bien</option>
-              <option value="neutral">Neutral</option>
-              <option value="triste">Triste</option>
-              <option value="ansioso">Ansioso/a</option>
-            </select>
-
-            <label for="descripcion">Describe tus emociones</label>
-            <textarea id="descripcion" name="descripcion" rows="6" placeholder="Escribe lo que sientes, posibles causas y qué te ayuda..."></textarea>
-
-            <div class="actions">
-              <a class="btn" href="index.html#caracteristicas">Volver</a>
-              <button class="btn primary" type="submit">Guardar</button>
-            </div>
-          </form>
+          <div id="app"></div>
+          <noscript>Esta página requiere JavaScript para funcionar.</noscript>
         </div>
       </section>
     </main>
@@ -62,7 +51,678 @@
       </div>
     </footer>
 
+    <!-- React + ReactDOM (UMD) -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel para interpretar JSX en el navegador (solo para esta página) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+      const { useEffect, useMemo, useState } = React;
+
+      /************************************
+       * App De Calendario De Estado De Ánimo (v1.11)
+       * - RESTORE APP: Se repone la app completa (la versión anterior se había sobrescrito por error con solo vinculoEmoji)
+       * - FIX: vinculoEmoji actualizado: Creencias=✝️, Clima=🌈, Ambiente=🌳, Mascotas=🐶
+       * - Tests ampliados
+       ************************************/
+
+      // === Utilidades de fechas ===
+      const pad = (n) => (n < 10 ? `0${n}` : `${n}`);
+      const dateKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+      const daysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
+      const firstDayOfMonth = (y, m) => new Date(y, m, 1).getDay(); // 0=Domingo
+      const isWeekendDate = (y, m, d) => {
+        const wd = new Date(y, m, d).getDay();
+        return wd === 0 || wd === 6; // domingo o sábado
+      };
+      // Fecha legible en español: 1 de Octubre de 2025
+      const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+      function humanDateFromKey(key) {
+        if (!key) return '';
+        const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(key);
+        if (!m) return key;
+        const y = parseInt(m[1], 10);
+        const mo = parseInt(m[2], 10) - 1;
+        const d = parseInt(m[3], 10);
+        const dt = new Date(y, mo, d);
+        const monthLong = new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(dt);
+        return `${d} de ${capitalize(monthLong)} de ${y}`;
+      }
+      // Festivos nacionales (España) MM-DD: fijos + Viernes Santo (variable por año)
+      function easterSunday(y) {
+        // Algoritmo de la Pascua (Calendario gregoriano)
+        const a = y % 19;
+        const b = Math.floor(y / 100);
+        const c = y % 100;
+        const d = Math.floor(b / 4);
+        const e = b % 4;
+        const f = Math.floor((b + 8) / 25);
+        const g = Math.floor((b - f + 1) / 3);
+        const h = (19 * a + b - d - g + 15) % 30;
+        const i = Math.floor(c / 4);
+        const k = c % 4;
+        const l = (32 + 2 * e + 2 * i - h - k) % 7;
+        const m2 = Math.floor((a + 11 * h + 22 * l) / 451);
+        const month = Math.floor((h + l - 7 * m2 + 114) / 31); // 3=Marzo, 4=Abril
+        const day = ((h + l - 7 * m2 + 114) % 31) + 1;
+        return new Date(y, month - 1, day);
+      }
+      function goodFriday(y) {
+        const easter = easterSunday(y);
+        const gf = new Date(easter);
+        gf.setDate(gf.getDate() - 2);
+        return gf;
+      }
+      const HOLIDAYS_CACHE = new Map();
+      function nationalHolidaysForYear(y) {
+        if (HOLIDAYS_CACHE.has(y)) return HOLIDAYS_CACHE.get(y);
+        const set = new Set([
+          '01-01', // Año Nuevo
+          '01-06', // Epifanía del Señor
+          '05-01', // Día del Trabajador
+          '08-15', // Asunción de la Virgen
+          '10-12', // Fiesta Nacional de España
+          '11-01', // Todos los Santos
+          '12-06', // Día de la Constitución
+          '12-08', // Inmaculada Concepción
+          '12-25', // Natividad del Señor (Navidad)
+        ]);
+        // Añadir Viernes Santo (variable, nacional)
+        const gf = goodFriday(y);
+        set.add(`${pad(gf.getMonth() + 1)}-${pad(gf.getDate())}`);
+        HOLIDAYS_CACHE.set(y, set);
+        return set;
+      }
+      const isNationalHoliday = (y, m, d) => nationalHolidaysForYear(y).has(`${pad(m + 1)}-${pad(d)}`);
+
+      // ID único robusto
+      function makeId() {
+        try { if (globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function') return globalThis.crypto.randomUUID(); } catch {}
+        return `id_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+      }
+
+      // Paleta de emojis arrastrables (3 emociones)
+      const EMOJI_PALETTE = ["😀", "😐", "😢"];
+
+      // Emociones con color semántico
+      const MOOD_COLORS = [
+        { name: "Miedo", color: "#7e22ce" },      // Morado
+        { name: "Amor propio", color: "#22c55e" }, // Verde
+        { name: "Tristeza", color: "#3b82f6" },    // Azul
+        { name: "Amor", color: "#f97316" },        // Naranja
+        { name: "Enfado", color: "#ef4444" },      // Rojo
+        { name: "Alegría", color: "#eab308" }      // Amarillo
+      ];
+
+      // Opciones de Vínculo (cajitas blancas, reordenado y ampliado)
+      const VINCULO_OPTIONS = [
+        "Familia", "Pareja", "Amigos", "Trabajo", "Estudios", "Ocio", "Salud", "Dinero",
+        "Mascotas", "Ambiente", "Clima", "Actualidad", "Creencias", "Desconocido", "Sexo"
+      ];
+
+      // Asocia un emoji a cada vínculo (actualizado y ampliado)
+      function vinculoEmoji(v) {
+        const map = {
+          "Familia": "👪",
+          "Pareja": "❤️",
+          "Trabajo": "💼",
+          "Estudios": "📚",
+          "Ocio": "🎉",
+          "Creencias": "✝️",
+          "Amigos": "👥",
+          "Desconocido": "❓",
+          "Clima": "🌈",
+          "Ambiente": "🌳",
+          "Dinero": "💰",
+          "Actualidad": "🗞️",
+          "Mascotas": "🐶",
+          "Salud": "🩺",
+          "Sexo": "💋",
+        };
+        return map[v] || "❓";
+      }
+
+      const STORAGE_KEY = "moodCalendar.v1";
+
+      // === Utilidades de color ===
+      function hexToRgba(hex, alpha = 0.18) {
+        const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        if (!m) return hex;
+        const r = parseInt(m[1], 16);
+        const g = parseInt(m[2], 16);
+        const b = parseInt(m[3], 16);
+        return `rgba(${r},${g},${b},${alpha.toFixed(2)})`;
+      }
+      function getContrastText(hex) {
+        const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        if (!m) return "#111827";
+        const r = parseInt(m[1], 16) / 255;
+        const g = parseInt(m[2], 16) / 255;
+        const b = parseInt(m[3], 16) / 255;
+        const srgb = [r, g, b].map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+        const L = 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
+        return L > 0.5 ? "#111827" : "#ffffff";
+      }
+      function clamp01(x) { return Math.max(0, Math.min(1, x)); }
+      function toHex2(n) { const s = n.toString(16); return s.length === 1 ? '0' + s : s; }
+      function parseHex(hex) {
+        const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        if (!m) return null;
+        return { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) };
+      }
+      function darkenHex(hex, amount = 0.2) {
+        const rgb = parseHex(hex);
+        if (!rgb) return hex;
+        const k = clamp01(1 - amount);
+        const r = Math.round(rgb.r * k);
+        const g = Math.round(rgb.g * k);
+        const b = Math.round(rgb.b * k);
+        return `#${toHex2(r)}${toHex2(g)}${toHex2(b)}`;
+      }
+      function monthThemeColor(data, year, month) {
+        const counts = new Map();
+        for (let d = 1; d <= daysInMonth(year, month); d++) {
+          const key = dateKey(new Date(year, month, d));
+          const rec = data[key]?.[0];
+          if (rec?.color) counts.set(rec.color, (counts.get(rec.color) || 0) + 1);
+        }
+        let top = null, max = 0;
+        counts.forEach((v, k) => { if (v > max) { max = v; top = k; } });
+        return top; // puede ser null
+      }
+
+      // Cuenta de colores por mes
+      function countColorsMonth(data, year, month) {
+        const counts = new Map();
+        for (let d = 1; d <= daysInMonth(year, month); d++) {
+          const key = dateKey(new Date(year, month, d));
+          const rec = data[key]?.[0];
+          if (rec?.color) counts.set(rec.color, (counts.get(rec.color) || 0) + 1);
+        }
+        return counts;
+      }
+
+      // Cuenta de vínculos por mes (Áreas de vida)
+      function countVinculosMonth(data, year, month) {
+        const counts = new Map();
+        for (let d = 1; d <= daysInMonth(year, month); d++) {
+          const key = dateKey(new Date(year, month, d));
+          const rec = data[key]?.[0];
+          if (rec?.vinculo) counts.set(rec.vinculo, (counts.get(rec.vinculo) || 0) + 1);
+        }
+        return counts;
+      }
+
+      // === Estado por día: forzar un solo registro ===
+      function setSingleRecord(prevState, dKey, record) {
+        const next = { ...prevState };
+        next[dKey] = record ? [record] : [];
+        return next;
+      }
+      function normalizeToSingle(list) {
+        if (!Array.isArray(list) || list.length === 0) return [];
+        return [list[0]];
+      }
+
+      // === Etiqueta textual para el emoticono ===
+      function emojiMoodLabel(emoji) {
+        if (emoji === "😀") return "contento";
+        if (emoji === "😢") return "triste";
+        return "neutro"; // por defecto (😐)
+      }
+
+      // === UI: Chips blancos reutilizables ===
+      function InfoChip({ children, title }) {
+        return (
+          <div
+            className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs shadow-sm border border-slate-200 bg-white"
+            title={title || ""}
+          >
+            {children}
+          </div>
+        );
+      }
+
+      // Modal simple
+      function Modal({ open, onClose, children }) {
+        if (!open) return null;
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+            <div className="relative z-10 w-[min(92vw,640px)] max-h-[86vh] overflow-auto rounded-2xl bg-white p-4 shadow-xl">
+              {children}
+            </div>
+          </div>
+        );
+      }
+
+      // Editor de un registro
+      function RecordEditor({ record, onChange }) {
+        return (
+          <div className="flex flex-col gap-4">
+            {/* ¿CÓMO LA SIENTES? */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <label className="text-sm font-medium text-slate-700">¿CÓMO LA SIENTES?</label>
+              <div className="flex gap-2">
+                {EMOJI_PALETTE.map((em) => (
+                  <button
+                    key={em}
+                    className={`rounded-lg px-2 py-1 text-lg hover:bg-slate-100 ${record.emoji === em ? 'ring-2 ring-slate-400' : ''}`}
+                    onClick={() => onChange({ ...record, emoji: em })}
+                    type="button"
+                  >
+                    {em}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ¿QUÉ SIENTES? */}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-slate-700">¿QUÉ SIENTES?</label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {MOOD_COLORS.map((m) => (
+                  <button
+                    key={m.name}
+                    className={`flex items-center justify-center rounded-xl border px-2 py-1 text-sm font-medium ${record.color === m.color ? 'ring-2 ring-slate-500' : ''}`}
+                    style={{ background: m.color, color: '#fff' }}
+                    onClick={() => onChange({ ...record, color: m.color, comment: record.comment ? record.comment : m.name })}
+                    type="button"
+                    title={m.name}
+                  >
+                    {m.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ¿DÓNDE LA SIENTES? */}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-slate-700">¿DÓNDE LA SIENTES?</label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {VINCULO_OPTIONS.map((v) => (
+                  <button
+                    key={v}
+                    className={`rounded-xl border px-3 py-2 text-sm font-medium bg-white ${record.vinculo === v ? 'ring-2 ring-slate-500' : ''}`}
+                    onClick={() => onChange({ ...record, vinculo: v })}
+                    type="button"
+                    title={v}
+                  >
+                    <span className="mr-1">{vinculoEmoji(v)}</span>
+                    {v}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* CUENTA ALGO MAS */}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">CUENTA ALGO MAS</label>
+              <textarea
+                value={record.comment || ''}
+                onChange={(e) => onChange({ ...record, comment: e.target.value })}
+                className="h-24 w-full resize-none rounded-lg border border-slate-300 p-2"
+                placeholder="Escribe un comentario opcional..."
+              />
+            </div>
+          </div>
+        );
+      }
+
+      // Editor del día (una sola emoción por día)
+      function DayEditor({ open, onClose, dateLabel, record, onChangeRecord }) {
+        const [local, setLocal] = useState(record || null);
+        useEffect(() => setLocal(record || null), [record]);
+
+        const addDefault = () => setLocal({ id: makeId(), emoji: '😀', color: '#ffffff', comment: '', vinculo: null });
+
+        return (
+          <Modal open={open} onClose={onClose}>
+            <h3 className="text-xl font-semibold text-slate-800 mb-4">{dateLabel}</h3>
+            <div className="flex flex-col gap-4">
+              {!local && (
+                <button onClick={addDefault} className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800" type="button">
+                  Añadir emoción del día
+                </button>
+              )}
+
+              {local && (
+                <>
+                  <div className="rounded-2xl bg-slate-50 p-3 ring-1 ring-slate-200">
+                    <RecordEditor
+                      record={local}
+                      onChange={(r) => setLocal(r)}
+                    />
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <button onClick={() => { onChangeRecord(null); onClose(); }} className="rounded-xl bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 ring-1 ring-rose-200 hover:bg-rose-100" type="button">
+                      Eliminar registro
+                    </button>
+                    <button
+                      onClick={() => { onChangeRecord(local); onClose(); }}
+                      className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
+                      type="button"
+                      disabled={!local}
+                    >
+                      Guardar
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </Modal>
+        );
+      }
+
+      /********* Tests de desarrollo *********/
+      function runDevTests() {
+        // Test makeId unicidad (básico)
+        const set = new Set();
+        for (let i = 0; i < 400; i++) set.add(makeId());
+        console.assert(set.size === 400, "[TEST] makeId debería ser único en 400 iteraciones");
+
+        // Test normalización a un solo registro
+        const norm1 = normalizeToSingle([]);           console.assert(Array.isArray(norm1) && norm1.length === 0, "[TEST] normalize empty");
+        const norm2 = normalizeToSingle([{a:1},{a:2}]);console.assert(norm2.length === 1, "[TEST] normalize trims to 1");
+
+        // Test setSingleRecord sobrescribe
+        const prev = { A: [{id: 'x'}] };
+        const next = setSingleRecord(prev, 'A', {id: 'y'});
+        console.assert(next.A.length === 1 && next.A[0].id === 'y', "[TEST] setSingleRecord debe reemplazar");
+
+        // Tests de utilidades de color
+        console.assert(hexToRgba('#ff0000', 0.2) === 'rgba(255,0,0,0.20)', '[TEST] hexToRgba rojo');
+        console.assert(getContrastText('#000000') === '#ffffff' && getContrastText('#ffffff') === '#111827', '[TEST] getContrastText básico');
+
+        // Test fin de semana (13 Oct 2025 = Lunes, 11 Oct 2025 = Sábado)
+        console.assert(isWeekendDate(2025, 9, 13) === false, '[TEST] 2025-10-13 debe ser laborable');
+        console.assert(isWeekendDate(2025, 9, 11) === true, '[TEST] 2025-10-11 debe ser fin de semana');
+
+        // Tests de Vínculo
+        console.assert(Array.isArray(VINCULO_OPTIONS) && VINCULO_OPTIONS.length === 13, '[TEST] VINCULO_OPTIONS debe tener 13 elementos');
+        console.assert(vinculoEmoji('Creencias') === '✝️', '[TEST] vinculoEmoji Creencias=✝️');
+        console.assert(vinculoEmoji('Clima') === '🌈', '[TEST] vinculoEmoji Clima=🌈');
+        console.assert(vinculoEmoji('Ambiente') === '🌳', '[TEST] vinculoEmoji Ambiente=🌳');
+        console.assert(vinculoEmoji('Mascotas') === '🐶', '[TEST] vinculoEmoji Mascotas=🐶');
+        console.assert(vinculoEmoji('XYZ') === '❓', '[TEST] vinculoEmoji fallback');
+      }
+
+      function MoodCalendarApp() {
+        const now = new Date();
+        const [year, setYear] = useState(now.getFullYear());
+        const [month, setMonth] = useState(now.getMonth());
+        const [data, setData] = useState({}); // { dKey: [record] }
+        const [dragEmoji, setDragEmoji] = useState(null);
+        const [editorDay, setEditorDay] = useState(null);
+
+        // Carga/guardado + tests
+        useEffect(() => {
+          // En navegador no se ejecutan tests de desarrollo
+          if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV !== 'production') {
+            try { runDevTests(); } catch (e) { console.warn('[TEST] error', e); }
+          }
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            try {
+              const parsed = JSON.parse(raw);
+              const normalized = Object.fromEntries(
+                Object.entries(parsed).map(([k, v]) => [k, normalizeToSingle(v)])
+              );
+              setData(normalized);
+            } catch {}
+          }
+        }, []);
+        useEffect(() => {
+          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
+        }, [data]);
+
+        const monthName = useMemo(() => new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(new Date(year, month, 1)), [year, month]);
+        const monthColor = monthThemeColor(data, year, month);
+
+        // Tema dinámico de la página a partir del color dominante del mes
+        useEffect(() => {
+          const styleId = 'dynamic-theme';
+          let styleEl = document.getElementById(styleId);
+          if (!styleEl) { styleEl = document.createElement('style'); styleEl.id = styleId; document.head.appendChild(styleEl); }
+
+          if (!monthColor) {
+            styleEl.textContent = '';
+            return;
+          }
+
+          const primary = monthColor;
+          const primary700 = darkenHex(primary, 0.25);
+          const headerBg = hexToRgba(primary, 0.25);
+          const borderTone = hexToRgba(primary, 0.25);
+          const rad1 = hexToRgba(primary, 0.15);
+          const rad2 = hexToRgba(primary, 0.12);
+          const baseBg = hexToRgba(primary, 0.10);
+
+          styleEl.textContent = `
+            :root{ --primary: ${primary}; --primary-700: ${primary700}; }
+            body{ background: radial-gradient(1200px 1200px at 10% -10%, ${rad1}, transparent 60%),
+                          radial-gradient(1000px 1000px at 110% 0%, ${rad2}, transparent 50%),
+                          ${baseBg}; }
+            .site-header{ background: ${headerBg}; border-bottom-color: ${borderTone}; }
+            .grid-3 article{ border-color: ${borderTone}; }
+            .btn.primary{ background: linear-gradient(135deg, ${primary}, ${primary700}); }
+            .site-footer{ border-top-color: ${borderTone}; }
+          `;
+        }, [monthColor]);
+
+        const totalDays = daysInMonth(year, month);
+        const firstWeekday = firstDayOfMonth(year, month); // 0=domingo
+        const leadingEmpty = (firstWeekday + 6) % 7; // lunes=0
+        const weekdayLabels = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+
+        // Resumen mensual por color
+        const colorCounts = useMemo(() => countColorsMonth(data, year, month), [data, year, month]);
+        const totalRegMes = useMemo(() => {
+          let s = 0; colorCounts.forEach((v) => { s += v; }); return s;
+        }, [colorCounts]);
+        const summaryRank = useMemo(() => {
+          return MOOD_COLORS
+            .map((m) => ({ ...m, count: colorCounts.get(m.color) || 0 }))
+            .sort((a, b) => (b.count - a.count) || a.name.localeCompare(b.name));
+        }, [colorCounts]);
+        const summaryNonZero = useMemo(() => summaryRank.filter((m) => m.count > 0), [summaryRank]);
+
+        // Resumen mensual por vínculo (Top 5)
+        const vincCounts = useMemo(() => countVinculosMonth(data, year, month), [data, year, month]);
+        const summaryVincTop5 = useMemo(() => {
+          return VINCULO_OPTIONS
+            .map((v) => ({ name: v, count: vincCounts.get(v) || 0 }))
+            .filter((x) => x.count > 0)
+            .sort((a, b) => (b.count - a.count) || a.name.localeCompare(b.name))
+            .slice(0, 5);
+        }, [vincCounts]);
+
+        const goPrev = () => { const d = new Date(year, month - 1, 1); setYear(d.getFullYear()); setMonth(d.getMonth()); };
+        const goNext = () => { const d = new Date(year, month + 1, 1); setYear(d.getFullYear()); setMonth(d.getMonth()); };
+
+        // Drop de emoji: reemplaza el registro del día
+        const onDropEmojiToDate = (dKey, emoji) => {
+          setData((prev) => setSingleRecord(prev, dKey, { id: makeId(), emoji, color: '#ffffff', comment: '', vinculo: null }));
+        };
+
+        const openDayEditor = (dKey) => setEditorDay(dKey);
+        const closeDayEditor = () => setEditorDay(null);
+
+        const editorRecord = editorDay ? (data[editorDay] && data[editorDay][0]) || null : null;
+        const editorDayHuman = useMemo(() => humanDateFromKey(editorDay), [editorDay]);
+        const saveEditorRecord = (rec) => setData((prev) => setSingleRecord(prev, editorDay, rec));
+
+        const todayKey = dateKey(new Date());
+
+        return (
+          <div className="min-h-screen w-full p-4 text-slate-900" style={{ background: monthColor ? hexToRgba(monthColor, 0.12) : 'linear-gradient(to bottom, #f8fafc, #f1f5f9)' }}>
+            <h1 className="text-2xl font-bold text-center mb-4">Calendario de Estado de Ánimo</h1>
+
+            {/* Barra de mes/año teñida con dominante */}
+            <div className="flex justify-between max-w-4xl mx-auto mb-4 items-center rounded-2xl ring-1 ring-slate-200 px-3 py-2"
+              style={{ background: monthColor ? monthColor : '#ffffff', color: monthColor ? getContrastText(monthColor) : '#111827' }}>
+              <button onClick={goPrev} className="rounded-2xl bg-white/80 px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-slate-200 hover:bg-white" style={{ color: '#111827' }}>← Mes anterior</button>
+              <div className="text-lg font-semibold capitalize">{monthName} {year}</div>
+              <button onClick={goNext} className="rounded-2xl bg-white/80 px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-slate-200 hover:bg-white" style={{ color: '#111827' }}>Mes siguiente →</button>
+            </div>
+
+            {/* Paleta + Resumen mensual */}
+            <div className="mx-auto mb-4 max-w-4xl grid gap-3 md:grid-cols-3">
+              {/* Paleta de emojis arrastrables */}
+              <div className="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200">
+                <div className="mb-1 px-1 text-xs font-medium text-slate-500">¿CÓMO LA SIENTES?</div>
+                <div className="flex flex-wrap gap-2">
+                  {EMOJI_PALETTE.map((em) => (
+                    <div
+                      key={em}
+                      draggable
+                      onDragStart={(e) => { setDragEmoji(em); e.dataTransfer.setData('text/plain', em); }}
+                      onDragEnd={() => setDragEmoji(null)}
+                      className={`cursor-grab select-none rounded-xl px-2 py-1 text-xl hover:bg-slate-100 ${dragEmoji === em ? 'ring-2 ring-slate-400' : ''}`}
+                      title="Arrastra al calendario"
+                    >
+                      {em}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Resumen mensual por color */}
+              <div className="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200">
+                <div className="mb-2 flex items-center justify-between">
+                  <div className="px-1 text-xs font-medium text-slate-500">Resumen Mensual EMOCIONES</div>
+                  <div className="px-1 text-xs font-semibold text-slate-700">Total: {totalRegMes}</div>
+                </div>
+                <div className="flex flex-col gap-1">
+                  {summaryNonZero.length > 0 ? (
+                    summaryNonZero.map((m) => (
+                      <div key={m.name} className="flex items-center justify-between rounded-lg px-2 py-1 hover:bg-slate-50">
+                        <div className="flex items-center gap-2">
+                          <span className="inline-block h-3.5 w-3.5 rounded-full ring-1 ring-black/10" style={{ background: m.color }} />
+                          <span className="text-sm text-slate-700">{m.name}</span>
+                        </div>
+                        <span className="text-sm font-mono text-slate-800">+{m.count}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="px-2 py-1 text-sm text-slate-500">Sin registros en {monthName}</div>
+                  )}
+                </div>
+              </div>
+
+              {/* Resumen mensual Áreas de Vida (Top 5 vínculos) */}
+              <div className="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200">
+                <div className="mb-2 flex items-center justify-between">
+                  <div className="px-1 text-xs font-medium text-slate-500">Resumen Mensual AREAS de VIDA</div>
+                  <div className="px-1 text-xs font-semibold text-slate-700">Total: {totalRegMes}</div>
+                </div>
+                <div className="flex flex-col gap-1">
+                  {summaryVincTop5.length > 0 ? (
+                    summaryVincTop5.map((v) => (
+                      <div key={v.name} className="flex items-center justify-between rounded-lg px-2 py-1 hover:bg-slate-50">
+                        <div className="flex items-center gap-2">
+                          <span className="text-base leading-none">{vinculoEmoji(v.name)}</span>
+                          <span className="text-sm text-slate-700">{v.name}</span>
+                        </div>
+                        <span className="text-sm font-mono text-slate-800">+{v.count}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="px-2 py-1 text-sm text-slate-500">Sin registros en {monthName}</div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Cabecera días de la semana (dinámica como la del mes) */}
+            <div
+              className="max-w-4xl mx-auto mb-1 rounded-2xl ring-1 ring-slate-200 px-3 py-1"
+              style={{ background: monthColor ? monthColor : '#ffffff', color: monthColor ? getContrastText(monthColor) : '#111827' }}
+            >
+              <div className="grid grid-cols-7 text-center text-sm font-semibold">
+                {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((w) => (
+                  <div key={w} className="py-0.5">{w}</div>
+                ))}
+              </div>
+            </div>
+
+            {/* Grid del calendario */}
+            <div className="grid grid-cols-7 gap-1 max-w-4xl mx-auto">
+              {Array.from({ length: ((firstWeekday + 6) % 7) }).map((_, i) => <div key={`empty-${i}`} />)}
+              {Array.from({ length: daysInMonth(year, month) }).map((_, i) => {
+                const day = i + 1;
+                const dKey = dateKey(new Date(year, month, day));
+                const rec = (data[dKey] && data[dKey][0]) || null;
+                const isToday = dKey === todayKey;
+                const isWeekend = isWeekendDate(year, month, day);
+                const bg = rec?.color ? hexToRgba(rec.color, 0.18) : '#ffffff';
+                const isHoliday = isNationalHoliday(year, month, day);
+                return (
+                  <div
+                    key={dKey}
+                    className={`relative flex aspect-square flex-col items-center justify-start gap-1 rounded-lg border p-2 hover:bg-slate-50 ${isWeekend ? 'border-dashed border-slate-400' : 'border-solid border-slate-300'} ${isToday ? 'ring-2 ring-emerald-400' : ''}`}
+                    style={{ background: bg }}
+                    onClick={() => openDayEditor(dKey)}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => { e.preventDefault(); const em = e.dataTransfer.getData('text/plain') || dragEmoji; if (em) onDropEmojiToDate(dKey, em); }}
+                  >
+                    <div className={`absolute right-2 top-2 font-bold text-base ${isHoliday ? 'text-red-600' : 'text-black'}`}>{day}</div>
+
+                    <div className="mt-5 flex w-full flex-col items-center gap-1">
+                      {rec ? (
+                        <>
+                          {/* 1) Emoción: chip blanco con emoji + etiqueta */}
+                          <InfoChip title="Emoción">
+                            <span className="text-base leading-none">{rec.emoji}</span>
+                            <span className="text-[11px] text-slate-700">{emojiMoodLabel(rec.emoji)}</span>
+                          </InfoChip>
+
+                          {/* 2) Vínculo seleccionado (emoji + texto) */}
+                          {rec.vinculo ? (
+                            <InfoChip title="Vínculo">
+                              <span className="text-base leading-none mr-1">{vinculoEmoji(rec.vinculo)}</span>
+                              <span className="text-[11px] text-slate-700">{rec.vinculo}</span>
+                            </InfoChip>
+                          ) : null}
+
+                          {/* 3) Comentario */}
+                          {rec.comment ? (
+                            <InfoChip title={rec.comment}>
+                              <span className="max-w-[140px] truncate text-[11px] text-slate-700">{rec.comment}</span>
+                            </InfoChip>
+                          ) : null}
+                        </>
+                      ) : (
+                        <div className="text-[10px] text-slate-400">Sin emoción</div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Editor del día */}
+            <DayEditor
+              open={!!editorDay}
+              onClose={closeDayEditor}
+              dateLabel={editorDayHuman || ''}
+              record={editorRecord}
+              onChangeRecord={saveEditorRecord}
+            />
+
+            <div className="mx-auto mt-6 max-w-4xl text-center text-xs text-slate-500">
+              v1.11 • Datos locales (localStorage) • Arrastra un emoji para crear registro • Click en un día para editar
+            </div>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById('app'));
+      root.render(<MoodCalendarApp />);
+    </script>
+
     <script src="js/main.js" defer></script>
   </body>
   </html>
-

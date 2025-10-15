@@ -14,5 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
       history.pushState(null, '', href);
     });
   });
-});
 
+  // Actualiza el texto del resumen de emociones en la Home
+  try {
+    const pResumen = document.querySelector('#caracteristicas .grid-3 article:nth-child(3) p');
+    if (pResumen) {
+      pResumen.textContent = 'Comprueba aqui tu evolución emocional con tablas de resumen.';
+    }
+  } catch {}
+});

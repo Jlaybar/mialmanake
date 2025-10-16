@@ -8,10 +8,9 @@
     <link rel="stylesheet" href="css/styles.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      /* Overrides específicos de esta página: textos en negro */
+      /* Overrides específicos de esta página: textos en negro (hover dinámico se inyecta por JS) */
       .site-header .brand { color: #000 !important; }
-      .site-nav a { color: #000 !important; }
-      .site-nav a:hover { color: #111827 !important; }
+      .site-nav a { color: #000 !important; font-weight: 700 !important; }
       .hero h1, .hero p { color: #000 !important; }
     </style>
   </head>
@@ -513,12 +512,15 @@
           const rad2 = hexToRgba(primary, 0.12);
           const baseBg = hexToRgba(primary, 0.10);
 
+          const glow = hexToRgba(primary, 0.65);
           styleEl.textContent = `
             :root{ --primary: ${primary}; --primary-700: ${primary700}; }
             body{ background: radial-gradient(1200px 1200px at 10% -10%, ${rad1}, transparent 60%),
                           radial-gradient(1000px 1000px at 110% 0%, ${rad2}, transparent 50%),
                           ${baseBg}; }
             .site-header{ background: ${headerBg}; border-bottom-color: ${borderTone}; }
+            /* Hover dinámico en cabecera: marca y enlaces del menú */
+            .site-header .brand:hover, .site-nav a:hover{ color: ${primary} !important; text-shadow: 0 0 8px ${glow}; }
             .grid-3 article{ border-color: ${borderTone}; }
             .btn.primary{ background: linear-gradient(135deg, ${primary}, ${primary700}); }
             .site-footer{ border-top-color: ${borderTone}; }

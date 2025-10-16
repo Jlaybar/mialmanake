@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MiAlmanake ï¿½ Diario de Retos</title>
+    <title>MiAlmanake � Diario de Retos</title>
     <meta name="description" content="Define objetivos, supera obstaculos y sigue tu progreso" />
     <link rel="stylesheet" href="css/styles.css" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -38,7 +38,9 @@
       body.wallpaper .btn[data-action="delete"]:hover {
         background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
         color: #ffffff !important;
-      }    </style></style>
+      }          /* Bloque 1 (Calendario) fondo negro y texto blanco */
+      body.wallpaper main.retos .calendar-panel { background: #000000 !important; color: #ffffff !important; border-color: rgba(255,255,255,0.2) !important; }
+      body.wallpaper main.retos .calendar-panel * { color: #ffffff !important; }</style></style>
   </head>
   <body class="wallpaper">
     <header class="site-header">
@@ -47,7 +49,7 @@
         <nav class="site-nav" aria-label="Principal">
           <ul>
             <li><a href="index.html#inicio">Inicio</a></li>
-            <li><a href="index.html#caracteristicas">Caracterï¿½sticas</a></li>
+            <li><a href=" index.html#caracteristicas\>Caracter�sticas</a></li>
             <li><a href="index.html#contacto">Contacto</a></li>
           </ul>
         </nav>
@@ -249,7 +251,7 @@
           const failBg = hexToRgba(FAIL_COLOR, 0.18);
           const inRange = (dKey) => activo && withinRange(dKey, activo.inicio, activo.fin);
           return (
-            <div className="mt-6">
+            <div className=" mt-6 calendar-panel rounded-2xl border border-slate-200 p-4\>
               <div className="mb-3 flex items-center justify-center gap-3">
                 <button className="btn primary" onClick={()=>{ const m=new Date(year,month-1,1); setYear(m.getFullYear()); setMonth(m.getMonth()); }}>mes-anterior</button>
                 <div className="text-lg font-semibold">{monthName}</div>

@@ -8,10 +8,9 @@
     <link rel="stylesheet" href="css/styles.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      /* Overrides específicos de esta página: textos en negro */
+      /* Overrides específicos de esta página: textos en negro (hover dinámico se inyecta por JS) */
       .site-header .brand { color: #000 !important; }
-      .site-nav a { color: #000 !important; }
-      .site-nav a:hover { color: #111827 !important; }
+      .site-nav a { color: #000 !important; font-weight: 700 !important; }
       .hero h1, .hero p { color: #000 !important; }
     </style>
   </head>
@@ -230,6 +229,19 @@
         let top = null, max = 0;
         counts.forEach((v, k) => { if (v > max) { max = v; top = k; } });
         return top; // puede ser null
+      }
+
+      // Mapea color HEX a nombre base para buscar imagen de fondo
+      function baseColorKeyFromHex(hex) {
+        if (!hex || typeof hex !== 'string') return null;
+        const h = hex.toLowerCase();
+        if (h === '#22c55e') return 'verde';     // Amor propio
+        if (h === '#ef4444') return 'rojo';      // Enfado
+        if (h === '#3b82f6') return 'azul';      // Tristeza
+        if (h === '#f97316') return 'naranja';   // Amor
+        if (h === '#7e22ce') return 'morado';    // Miedo
+        if (h === '#eab308') return 'amarillo';  // Alegría
+        return null;
       }
 
       // Cuenta de colores por mes
@@ -500,16 +512,54 @@
           const rad2 = hexToRgba(primary, 0.12);
           const baseBg = hexToRgba(primary, 0.10);
 
+          const glow = hexToRgba(primary, 0.65);
           styleEl.textContent = `
             :root{ --primary: ${primary}; --primary-700: ${primary700}; }
             body{ background: radial-gradient(1200px 1200px at 10% -10%, ${rad1}, transparent 60%),
                           radial-gradient(1000px 1000px at 110% 0%, ${rad2}, transparent 50%),
                           ${baseBg}; }
             .site-header{ background: ${headerBg}; border-bottom-color: ${borderTone}; }
+            /* Hover dinámico en cabecera: marca y enlaces del menú */
+            .site-header .brand:hover, .site-nav a:hover{ color: ${primary} !important; text-shadow: 0 0 8px ${glow}; }
             .grid-3 article{ border-color: ${borderTone}; }
             .btn.primary{ background: linear-gradient(135deg, ${primary}, ${primary700}); }
             .site-footer{ border-top-color: ${borderTone}; }
           `;
+        }, [monthColor]);
+
+        // Intenta cargar imagen de fondo según el color dominante del mes
+        useEffect(() => {
+          const key = baseColorKeyFromHex(monthColor);
+          const body = document.body;
+          let canceled = false;
+
+          function clearBg() {
+            if (body.getAttribute('data-bg-managed') === '1') {
+              body.style.backgroundImage = '';
+              body.style.backgroundSize = '';
+              body.style.backgroundPosition = '';
+              body.style.backgroundRepeat = '';
+              body.style.backgroundAttachment = '';
+              body.removeAttribute('data-bg-managed');
+            }
+          }
+
+          if (!key) { clearBg(); return; }
+          const src = `assets/images/fondo_${key}.png`;
+          const img = new Image();
+          img.onload = () => {
+            if (canceled) return;
+            body.style.backgroundImage = `url(${src})`;
+            body.style.backgroundSize = 'cover';
+            body.style.backgroundPosition = 'center';
+            body.style.backgroundRepeat = 'no-repeat';
+            body.style.backgroundAttachment = 'fixed';
+            body.setAttribute('data-bg-managed', '1');
+          };
+          img.onerror = () => { if (!canceled) clearBg(); };
+          img.src = src;
+
+          return () => { canceled = true; };
         }, [monthColor]);
 
         const totalDays = daysInMonth(year, month);

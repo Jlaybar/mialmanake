@@ -6,8 +6,76 @@
     <title>Mi Sitio Web</title>
     <meta name="description" content="Sitio web inicial" />
     <link rel="stylesheet" href="css/styles.css" />
+    <style>
+      /* Fondo de pantalla para index en todos los bloques */
+      body.wallpaper {
+        background: url('assets/images/origami_01.png') center center / cover fixed no-repeat !important;
+        color: #ffffff;
+      }
+      /* Secciones transparentes para dejar ver el fondo */
+      body.wallpaper .site-header,
+      body.wallpaper .hero,
+      body.wallpaper .features,
+      body.wallpaper .site-footer {
+        background: transparent !important;
+        border-color: rgba(255,255,255,0.2) !important;
+      }
+      /* Tarjetas (Diario de Emociones, Retos, Resumen) con degradado azul #007fcc */
+      body.wallpaper .grid-3 article {
+        background: linear-gradient(135deg, #40a9e8, #007fcc) !important;
+        border-color: rgba(255,255,255,0.25) !important;
+      }
+      /* Forzar textos en blanco para buena legibilidad */
+      body.wallpaper .site-header .brand,
+      body.wallpaper .site-nav a,
+      body.wallpaper .hero h1,
+      body.wallpaper .hero p,
+      body.wallpaper .grid-3 h2,
+      body.wallpaper .grid-3 p,
+      body.wallpaper .site-footer {
+        color: #ffffff !important;
+      }
+      /* Cabecera en negrita */
+      body.wallpaper .site-nav a { font-weight: 700 !important; }
+      /* Hover del menú principal */
+      body.wallpaper .site-nav a:hover {
+        color: #1c007a !important;
+      }
+      /* Hover de la marca (MiAlmanake) */
+      body.wallpaper .site-header .brand:hover {
+        color: #1c007a !important;
+      }
+
+      /* Botones "Entrar" a amarillo con degradado */
+      body.wallpaper .btn.primary {
+        background: linear-gradient(135deg, #fde047, #f59e0b) !important; /* amarillo → ámbar */
+        border-color: transparent !important;
+        color: #111827 !important; /* texto oscuro para contraste */
+      }
+      /* En tarjetas (Entrar): cambiar a naranja al pasar el ratón */
+      body.wallpaper .features .grid-3 a.btn.primary:hover {
+        background: linear-gradient(135deg, #f59e0b, #d97706) !important; /* ámbar → naranja fuerte */
+        color: #ffffff !important; /* texto blanco al pasar el ratón */
+      }
+      /* "Ver más" (hero) con el mismo hover que Entrar */
+      body.wallpaper .hero .actions a.btn.primary:hover {
+        background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+        color: #ffffff !important;
+      }
+      /* Botón Contacto en el héroe con fondo azul (igual a tarjetas) */
+      body.wallpaper .hero .actions a.btn[href="#contacto"] {
+        background: linear-gradient(135deg, #40a9e8, #007fcc) !important;
+        border-color: transparent !important;
+        color: #ffffff !important;
+      }
+      /* Hover del botón Contacto: naranja más oscuro, texto blanco */
+      body.wallpaper .hero .actions a.btn[href="#contacto"]:hover {
+        background: linear-gradient(135deg, #d97706, #b45309) !important;
+        color: #ffffff !important;
+      }
+    </style>
   </head>
-  <body>
+  <body class="wallpaper">
     <header class="site-header">
       <div class="container">
         <a class="brand" href="#">MiAlmanake</a>
@@ -44,6 +112,11 @@
             <h2>Diario de RETOS</h2>
             <p>Define objetivos, supera obstáculos y sigue tu progreso diario.</p>
             <a class="btn primary" href="#diario-retos">Entrar</a>
+          </article>
+          <article>
+            <h2>Resumen de Emociones</h2>
+            <p>Comprueba aqui tu evolución emocional.</p>
+            <a class="btn primary" href="graficas.html">Entrar</a>
           </article>
         </div>
       </section>

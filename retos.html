@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es">
   <head>
     <meta charset="utf-8" />
@@ -21,7 +21,7 @@
       body.wallpaper .hero h1,
       body.wallpaper .hero p,
       body.wallpaper .site-footer { color: #ffffff !important; }
-      body.wallpaper main.retos .rounded-2xl.bg-white { background: linear-gradient(135deg, #40a9e8, #007fcc) !important; border-color: rgba(255,255,255,0.25) !important; }
+      body.wallpaper main.retos .rounded-2xl.bg-white { background: linear-gradient(135deg, #40a9e8, #007fcc) !important; border-color: rgba(255,255,255,0.25) !important; }`r`n      body.wallpaper main.retos .actions-panel { background: #ffffff !important; color: #111827 !important; border-color: rgba(0,0,0,0.1) !important; }
       /* Botones primarios como en index */
       body.wallpaper .btn.primary { background: linear-gradient(135deg, #fde047, #f59e0b) !important; border-color: transparent !important; color: #111827 !important; }
       body.wallpaper .btn.primary:hover { background: linear-gradient(135deg, #f59e0b, #d97706) !important; color: #ffffff !important; }
@@ -139,7 +139,7 @@
         function BlockNuevoReto({ onSaved }){
           const [form, setForm] = useState({ nombre:'', descripcion:'', inicio:'', fin:'' });
           return (
-            <div className="rounded-2xl border border-slate-200 bg-white p-4">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 actions-panel">
               <h2 className="mb-2 text-lg font-semibold">Nuevo Reto</h2>
               <div className="space-y-2">
                 <div>
@@ -173,7 +173,7 @@
           const [showDelete, setShowDelete] = useState(false);
           const [delId, setDelId] = useState('');
           return (
-            <div className="rounded-2xl border border-slate-200 bg-white p-4">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 actions-panel">
               <h2 className="mb-3 text-lg font-semibold">Acciones</h2>
               <div className="flex flex-wrap gap-2">
                 <button className="btn primary" onClick={()=>setShowCreate(true)}>Crear nuevo reto</button>
@@ -221,8 +221,8 @@
 
         function BlockTusRetos(){
           return (
-            <div className="rounded-2xl border border-slate-200 bg-white p-4">
-              <h2 className="mb-2 text-lg font-semibold">Tus Retos</h2>
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 actions-panel">
+              <h2 className="mb-2 text-lg font-semibold text-yellow-300">Tus Retos</h2>
               {retos.length===0 ? (
                 <div className="text-sm">Aï¿½n no hay retos. Crea el primero para empezar.</div>
               ) : (
@@ -251,9 +251,9 @@
           return (
             <div className="mt-6">
               <div className="mb-3 flex items-center justify-center gap-3">
-                <button className="btn" onClick={()=>{ const m=new Date(year,month-1,1); setYear(m.getFullYear()); setMonth(m.getMonth()); }}>mes-anterior</button>
+                <button className="btn primary" onClick={()=>{ const m=new Date(year,month-1,1); setYear(m.getFullYear()); setMonth(m.getMonth()); }}>mes-anterior</button>
                 <div className="text-lg font-semibold">{monthName}</div>
-                <button className="btn" onClick={()=>{ const m=new Date(year,month+1,1); setYear(m.getFullYear()); setMonth(m.getMonth()); }}>mes-siguiente</button>
+                <button className="btn primary" onClick={()=>{ const m=new Date(year,month+1,1); setYear(m.getFullYear()); setMonth(m.getMonth()); }}>mes-siguiente</button>
               </div>
 
               <div className="max-w-4xl mx-auto mb-1 rounded-2xl ring-1 ring-slate-200 px-3 py-1 bg-white/70">
@@ -295,9 +295,7 @@
         }
 
         return (
-          <div className="space-y-4">
-            <BlockAccionesRetos />
-            <BlockTusRetos />
+          <div className="space-y-4">`r`n            <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">`r`n              <div className="lg:col-span-1">`r`n                <BlockAccionesRetos />`r`n              </div>`r`n              <div className="lg:col-span-3">`r`n                <BlockTusRetos />`r`n              </div>`r`n            </div>
             <BlockCalendar />
           </div>
         );

@@ -1,22 +1,9 @@
 <!doctype html>
-
-
-      /* Botones primarios como en index: amarillo por defecto, naranja al hover */
-      body.wallpaper .btn.primary {
-        background: linear-gradient(135deg, #fde047, #f59e0b) !important;
-        border-color: transparent !important;
-        color: #111827 !important;
-      }
-      body.wallpaper .btn.primary:hover {
-        background: linear-gradient(135deg, #f59e0b, #d97706) !important;
-        color: #ffffff !important;
-      }
-<!doctype html>
 <html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MiAlmanake ‚Äî Diario de Retos</title>
+    <title>MiAlmanake ó Diario de Retos</title>
     <meta name="description" content="Define objetivos, supera obstaculos y sigue tu progreso" />
     <link rel="stylesheet" href="css/styles.css" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -35,15 +22,11 @@
       body.wallpaper .hero p,
       body.wallpaper .site-footer { color: #ffffff !important; }
       body.wallpaper main.retos .rounded-2xl.bg-white { background: linear-gradient(135deg, #40a9e8, #007fcc) !important; border-color: rgba(255,255,255,0.25) !important; }
-      body { background: #ffffff !important; }
-      .site-header .brand { color: #000 !important; }
-      .site-nav a { color: #000 !important; font-weight: 700 !important; }
-      .site-nav a:hover { color: #1c007a !important; }
-      .hero h1, .hero p { color: #000 !important; }
-      main.retos, main.retos * { color: #000 !important; }
+      /* Botones primarios como en index */
+      body.wallpaper .btn.primary { background: linear-gradient(135deg, #fde047, #f59e0b) !important; border-color: transparent !important; color: #111827 !important; }
+      body.wallpaper .btn.primary:hover { background: linear-gradient(135deg, #f59e0b, #d97706) !important; color: #ffffff !important; }
       .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; z-index: 50; }
-      .modal-card { width: min(92%, 680px); background: #fff; border-radius: 16px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-$css`r`n    </style>
+      .modal-card { width: min(92%, 680px); background: #fff; border-radius: 16px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }    </style></style>
   </head>
   <body class="wallpaper">
     <header class="site-header">
@@ -52,7 +35,7 @@ $css`r`n    </style>
         <nav class="site-nav" aria-label="Principal">
           <ul>
             <li><a href="index.html#inicio">Inicio</a></li>
-            <li><a href="index.html#caracteristicas">Caracter√≠sticas</a></li>
+            <li><a href="index.html#caracteristicas">CaracterÌsticas</a></li>
             <li><a href="index.html#contacto">Contacto</a></li>
           </ul>
         </nav>
@@ -70,14 +53,14 @@ $css`r`n    </style>
       <section>
         <div class="container">
           <div id="app"></div>
-          <noscript>Esta p√°gina requiere JavaScript para funcionar.</noscript>
+          <noscript>Esta p·gina requiere JavaScript para funcionar.</noscript>
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
       <div class="container">
-        <p>¬© <span id="year"></span> MiAlmanake. Todos los derechos reservados.</p>
+        <p>© <span id="year"></span> MiAlmanake. Todos los derechos reservados.</p>
       </div>
     </footer>
 
@@ -152,8 +135,8 @@ $css`r`n    </style>
                   <input value={form.nombre} onChange={e=>setForm({...form, nombre:e.target.value})} type="text" className="w-full rounded border border-slate-300 px-2 py-1" placeholder="Ej. Leer 20 min diarios" />
                 </div>
                 <div>
-                  <label className="block text-sm">Descripci√≥n</label>
-                  <textarea value={form.descripcion} onChange={e=>setForm({...form, descripcion:e.target.value})} className="w-full rounded border border-slate-300 px-2 py-1" rows={3} placeholder="Qu√©, cu√°ndo y c√≥mo" />
+                  <label className="block text-sm">DescripciÛn</label>
+                  <textarea value={form.descripcion} onChange={e=>setForm({...form, descripcion:e.target.value})} className="w-full rounded border border-slate-300 px-2 py-1" rows={3} placeholder="QuÈ, cu·ndo y cÛmo" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
@@ -200,15 +183,15 @@ $css`r`n    </style>
               {showDelete && (
                 <div className="modal-mask">
                   <div className="modal-card" style={{width:'min(92%,560px)'}}>
-                    <div className="mb-3 text-lg font-semibold">Selecciona cu√°l de ellos quieres eliminar</div>
+                    <div className="mb-3 text-lg font-semibold">Selecciona cu·l de ellos quieres eliminar</div>
                     {retos.length===0 ? (
                       <div className="text-sm">No hay retos para borrar.</div>
                     ) : (
                       <div className="space-y-3">
                         <select className="w-full rounded border border-slate-300 px-2 py-2" value={delId} onChange={e=>setDelId(e.target.value)}>
-                          <option value="">‚Äî Selecciona un reto ‚Äî</option>
+                          <option value="">ó Selecciona un reto ó</option>
                           {retos.map(r=> (
-                            <option key={r.id} value={r.id}>{r.nombre} ({r.inicio} ‚Üí {r.fin})</option>
+                            <option key={r.id} value={r.id}>{r.nombre} ({r.inicio} ? {r.fin})</option>
                           ))}
                         </select>
                         <div className="flex items-center justify-end gap-2">
@@ -229,7 +212,7 @@ $css`r`n    </style>
             <div className="rounded-2xl border border-slate-200 bg-white p-4">
               <h2 className="mb-2 text-lg font-semibold">Tus Retos</h2>
               {retos.length===0 ? (
-                <div className="text-sm">A√∫n no hay retos. Crea el primero para empezar.</div>
+                <div className="text-sm">A˙n no hay retos. Crea el primero para empezar.</div>
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {retos.map(r=>{
@@ -238,7 +221,7 @@ $css`r`n    </style>
                     const fg = active ? getContrastText(r.color||'#3b82f6') : '#111827';
                     const border = active ? 'transparent' : (r.color||'#3b82f6');
                     return (
-                      <button key={r.id} onClick={()=>setActivo(r.id)} className="px-3 py-1 rounded-full border text-sm" style={{ background:bg, color:fg, borderColor:border }} title={`${r.nombre} (${r.inicio} ‚Üí ${r.fin})`}>
+                      <button key={r.id} onClick={()=>setActivo(r.id)} className="px-3 py-1 rounded-full border text-sm" style={{ background:bg, color:fg, borderColor:border }} title={`${r.nombre} (${r.inicio} ? ${r.fin})`}>
                         {r.nombre}
                       </button>
                     );
@@ -288,8 +271,8 @@ $css`r`n    </style>
                       title={inside? (status==='ok'?'Exito':'') + (status==='fail'?'Fallo':'') : 'Fuera de rango'}
                     >
                       <div className={`absolute right-2 top-2 font-bold text-base ${inside? 'text-black':'text-slate-500'}`}>{day}</div>
-                      {status==='ok' && <div className="mt-6 text-2xl">‚úÖ</div>}
-                      {status==='fail' && <div className="mt-6 text-2xl">‚ùå</div>}
+                      {status==='ok' && <div className="mt-6 text-2xl">?</div>}
+                      {status==='fail' && <div className="mt-6 text-2xl">?</div>}
                       {!status && inside && <div className="mt-6 text-[11px] text-slate-400">Marca</div>}
                     </div>
                   );
@@ -315,4 +298,5 @@ $css`r`n    </style>
     <script src="js/main.js" defer></script>
   </body>
   </html>
+
 

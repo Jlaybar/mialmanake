@@ -57,8 +57,9 @@
 
 ## Revisores, Asignados y Etiquetas
 
-- Asignados: @tu_usuario
-- Revisores: @revisor1, @revisor2
+- Asignados: @Jlaybar
+- Revisores: @Jlaybar
 - Etiquetas sugeridas: enhancement, ui, data-viz
 
 > Sustituye los placeholders (@tu_usuario, @revisor1, @revisor2) por los usuarios de GitHub correspondientes al crear el PR en la web o con GitHub CLI.
+

@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MiAlmanake — Diario de Retos</title>
+    <meta name="description" content="Define objetivos, supera obstáculos y sigue tu progreso" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Overrides específicos: textos en negro para cabecera y héroe */
+      .site-header .brand { color: #000 !important; }
+      .site-nav a { color: #000 !important; font-weight: 700 !important; }
+      .site-nav a:hover { color: #1c007a !important; }
+      .hero h1, .hero p { color: #000 !important; }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <a class="brand" href="index.html">MiAlmanake</a>
+        <nav class="site-nav" aria-label="Principal">
+          <ul>
+            <li><a href="index.html#inicio">Inicio</a></li>
+            <li><a href="index.html#caracteristicas">Características</a></li>
+            <li><a href="index.html#contacto">Contacto</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="diario-retos" class="section retos">
+      <section class="hero">
+        <div class="container">
+          <h1>Diario de Retos</h1>
+          <p>Define objetivos, supera obstáculos y sigue tu progreso diario.</p>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div id="app"></div>
+          <noscript>Esta página requiere JavaScript para funcionar.</noscript>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>© <span id="year"></span> MiAlmanake. Todos los derechos reservados.</p>
+      </div>
+    </footer>
+
+    <!-- React + ReactDOM (UMD) -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel para interpretar JSX en el navegador (como emociones) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+      const { useEffect, useMemo, useState } = React;
+
+      // === Utilidades de fechas (mismos formatos que emociones) ===
+      const pad = (n) => (n < 10 ? `0${n}` : `${n}`);
+      const dateKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+      const parseKey = (k) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(k); if (!m) return null; return new Date(+m[1], +m[2]-1, +m[3]); };
+      const daysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
+      const firstDayOfMonth = (y, m) => new Date(y, m, 1).getDay(); // 0=domingo
+      const isWeekendDate = (y, m, d) => { const wd = new Date(y, m, d).getDay(); return wd === 0 || wd === 6; };
+      const humanMonth = (y, m) => new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(new Date(y, m, 1));
+      const hexToRgba = (hex, alpha = 0.18) => {
+        const mm = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        if (!mm) return hex; const r = parseInt(mm[1],16), g = parseInt(mm[2],16), b = parseInt(mm[3],16);
+        return `rgba(${r},${g},${b},${alpha})`;
+      };
+
+      // === Datos ===
+      const STORAGE_KEY = 'retos.v1';
+      const OK_COLOR = '#22c55e'; // verde
+      const FAIL_COLOR = '#ef4444'; // rojo
+
+      function makeId() { return `r_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`; }
+
+      function withinRange(d, startKey, endKey) {
+        if (!startKey || !endKey) return false;
+        const dk = typeof d === 'string' ? d : dateKey(d);
+        return dk >= startKey && dk <= endKey;
+      }
+
+      function RetosApp() {
+        const now = new Date();
+        const [year, setYear] = useState(now.getFullYear());
+        const [month, setMonth] = useState(now.getMonth());
+        const [state, setState] = useState({ retos: [], activoId: null });
+
+        // Carga/guardar
+        useEffect(() => {
+          try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              if (parsed && Array.isArray(parsed.retos)) setState(parsed);
+            }
+          } catch {}
+        }, []);
+        useEffect(() => {
+          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+        }, [state]);
+
+        const retos = state.retos;
+        const activo = useMemo(() => retos.find(r => r.id === state.activoId) || null, [retos, state.activoId]);
+
+        function addReto(form) {
+          const nombre = form.nombre.trim();
+          if (!nombre) return;
+          const desc = form.descripcion.trim();
+          const inicio = form.inicio;
+          const fin = form.fin;
+          if (!inicio || !fin || fin < inicio) return;
+          const ret = { id: makeId(), nombre, descripcion: desc, inicio, fin, progreso: {} };
+          setState(s => ({ retos: [...s.retos, ret], activoId: ret.id }));
+        }
+
+        function setActivo(id) { setState(s => ({ ...s, activoId: id })); }
+
+        function toggleDay(key) {
+          if (!activo) return;
+          if (!withinRange(key, activo.inicio, activo.fin)) return;
+          const curr = activo.progreso[key] || null;
+          const next = curr === 'ok' ? 'fail' : (curr === 'fail' ? null : 'ok');
+          setState(s => ({
+            ...s,
+            retos: s.retos.map(r => r.id === activo.id ? { ...r, progreso: { ...r.progreso, [key]: next } } : r)
+          }));
+        }
+
+        const monthName = humanMonth(year, month);
+        const firstWeekday = firstDayOfMonth(year, month); // 0=domingo
+        const leadingEmpty = (firstWeekday + 6) % 7; // lunes=0
+
+        // Bloque 0: selector + creación de retos
+        function BlockSelector() {
+          const [form, setForm] = useState({ nombre: '', descripcion: '', inicio: '', fin: '' });
+          return (
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+              <div className="lg:col-span-1 rounded-2xl border border-slate-200 bg-white p-4">
+                <h2 className="mb-2 text-lg font-semibold text-slate-800">Nuevo Reto</h2>
+                <div className="space-y-2">
+                  <div>
+                    <label className="block text-sm text-slate-600">Nombre</label>
+                    <input value={form.nombre} onChange={(e)=>setForm({...form, nombre:e.target.value})} type="text" className="w-full rounded border border-slate-300 px-2 py-1" placeholder="Ej. Leer 20 min diarios" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-slate-600">Descripción</label>
+                    <textarea value={form.descripcion} onChange={(e)=>setForm({...form, descripcion:e.target.value})} className="w-full rounded border border-slate-300 px-2 py-1" rows={3} placeholder="¿Qué, cuándo y cómo?" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-sm text-slate-600">Inicio</label>
+                      <input value={form.inicio} onChange={(e)=>setForm({...form, inicio:e.target.value})} type="date" className="w-full rounded border border-slate-300 px-2 py-1" />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-slate-600">Fin</label>
+                      <input value={form.fin} onChange={(e)=>setForm({...form, fin:e.target.value})} type="date" className="w-full rounded border border-slate-300 px-2 py-1" />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-end">
+                    <button type="button" className="btn primary" onClick={()=>addReto(form)}>Guardar</button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:col-span-2 rounded-2xl border border-slate-200 bg-white p-4">
+                <h2 className="mb-2 text-lg font-semibold text-slate-800">Tus Retos</h2>
+                {retos.length === 0 ? (
+                  <div className="text-sm text-slate-600">Aún no hay retos. Crea el primero para empezar.</div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {retos.map(r => (
+                      <button key={r.id} onClick={()=>setActivo(r.id)}
+                        className={`px-3 py-1 rounded-full border text-sm ${state.activoId===r.id? 'bg-emerald-100 border-emerald-300 text-emerald-800':'bg-white border-slate-300 text-slate-700'}`}
+                        title={`${r.nombre} (${r.inicio} → ${r.fin})`}>
+                        {r.nombre}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        // Bloque 1: calendario interactivo debajo del selector
+        function BlockCalendar() {
+          const okBg = hexToRgba(OK_COLOR, 0.2);
+          const failBg = hexToRgba(FAIL_COLOR, 0.18);
+          const inRange = (dKey) => activo && withinRange(dKey, activo.inicio, activo.fin);
+          return (
+            <div className="mt-6">
+              <div className="mb-3 flex items-center justify-between">
+                <div className="text-lg font-semibold text-slate-800">{monthName}</div>
+                <div className="flex items-center gap-2">
+                  <button className="btn" onClick={()=>{ const m=new Date(year,month-1,1); setYear(m.getFullYear()); setMonth(m.getMonth()); }}>◀</button>
+                  <button className="btn" onClick={()=>{ const m=new Date(year,month+1,1); setYear(m.getFullYear()); setMonth(m.getMonth()); }}>▶</button>
+                </div>
+              </div>
+
+              {/* Cabecera días de la semana */}
+              <div className="max-w-4xl mx-auto mb-1 rounded-2xl ring-1 ring-slate-200 px-3 py-1 bg-white/70">
+                <div className="grid grid-cols-7 text-center text-sm font-semibold">
+                  {['L','M','X','J','V','S','D'].map(w => <div key={w} className="py-0.5">{w}</div>)}
+                </div>
+              </div>
+
+              {/* Grid calendario (formato como emociones) */}
+              <div className="grid grid-cols-7 gap-1 max-w-4xl mx-auto">
+                {Array.from({ length: leadingEmpty }).map((_,i)=><div key={`empty-${i}`} />)}
+                {Array.from({ length: daysInMonth(year, month) }).map((_, i) => {
+                  const day = i+1; const dKey = dateKey(new Date(year,month,day));
+                  const isWeekend = isWeekendDate(year,month,day);
+                  const status = activo?.progreso?.[dKey] || null;
+                  const inside = inRange(dKey);
+                  const styleBg = status==='ok'? okBg : (status==='fail'? failBg : '#ffffff');
+                  const borderCls = inside ? (status==='ok' ? 'border-emerald-400' : (status==='fail' ? 'border-rose-400' : 'border-slate-300')) : 'border-slate-200';
+                  const ringCls = inside ? 'ring-1 ring-emerald-200' : '';
+                  return (
+                    <div key={dKey}
+                      className={`relative flex aspect-square flex-col items-center justify-start gap-1 rounded-lg border p-2 hover:bg-slate-50 ${isWeekend? 'border-dashed' : 'border-solid'} ${ringCls} ${inside? '' : 'opacity-40'}`}
+                      style={{ background: styleBg }}
+                      onClick={()=> inside && toggleDay(dKey)}
+                      title={inside? (status==='ok'?'Éxito':'') + (status==='fail'?'Fallo':'') : 'Fuera de rango'}
+                    >
+                      <div className={`absolute right-2 top-2 font-bold text-base ${inside? 'text-black':'text-slate-500'}`}>{day}</div>
+                      {status==='ok' && <div className="mt-6 text-2xl">✅</div>}
+                      {status==='fail' && <div className="mt-6 text-2xl">❌</div>}
+                      {!status && inside && <div className="mt-6 text-[11px] text-slate-400">Marca</div>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <div className="space-y-4">
+            <BlockSelector />
+            <BlockCalendar />
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById('app'));
+      root.render(<RetosApp />);
+    </script>
+
+    <script src="js/main.js" defer></script>
+  </body>
+  </html>

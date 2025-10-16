@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MiAlmanake � Diario de Retos</title>
+    <title>MiAlmanake ï¿½ Diario de Retos</title>
     <meta name="description" content="Define objetivos, supera obstaculos y sigue tu progreso" />
     <link rel="stylesheet" href="css/styles.css" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -26,7 +26,19 @@
       body.wallpaper .btn.primary { background: linear-gradient(135deg, #fde047, #f59e0b) !important; border-color: transparent !important; color: #111827 !important; }
       body.wallpaper .btn.primary:hover { background: linear-gradient(135deg, #f59e0b, #d97706) !important; color: #ffffff !important; }
       .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; z-index: 50; }
-      .modal-card { width: min(92%, 680px); background: #fff; border-radius: 16px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }    </style></style>
+      .modal-card { width: min(92%, 680px); background: #fff; border-radius: 16px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+      /* Botones Cerrar/Borrar: naranja por defecto, rojo al pasar el ratÃ³n */
+      body.wallpaper .btn[data-action="close"],
+      body.wallpaper .btn[data-action="delete"] {
+        background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+        border-color: transparent !important;
+        color: #ffffff !important;
+      }
+      body.wallpaper .btn[data-action="close"]:hover,
+      body.wallpaper .btn[data-action="delete"]:hover {
+        background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
+        color: #ffffff !important;
+      }    </style></style>
   </head>
   <body class="wallpaper">
     <header class="site-header">
@@ -35,7 +47,7 @@
         <nav class="site-nav" aria-label="Principal">
           <ul>
             <li><a href="index.html#inicio">Inicio</a></li>
-            <li><a href="index.html#caracteristicas">Caracter�sticas</a></li>
+            <li><a href="index.html#caracteristicas">Caracterï¿½sticas</a></li>
             <li><a href="index.html#contacto">Contacto</a></li>
           </ul>
         </nav>
@@ -53,14 +65,14 @@
       <section>
         <div class="container">
           <div id="app"></div>
-          <noscript>Esta p�gina requiere JavaScript para funcionar.</noscript>
+          <noscript>Esta pï¿½gina requiere JavaScript para funcionar.</noscript>
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
       <div class="container">
-        <p>� <span id="year"></span> MiAlmanake. Todos los derechos reservados.</p>
+        <p>ï¿½ <span id="year"></span> MiAlmanake. Todos los derechos reservados.</p>
       </div>
     </footer>
 
@@ -135,8 +147,8 @@
                   <input value={form.nombre} onChange={e=>setForm({...form, nombre:e.target.value})} type="text" className="w-full rounded border border-slate-300 px-2 py-1" placeholder="Ej. Leer 20 min diarios" />
                 </div>
                 <div>
-                  <label className="block text-sm">Descripci�n</label>
-                  <textarea value={form.descripcion} onChange={e=>setForm({...form, descripcion:e.target.value})} className="w-full rounded border border-slate-300 px-2 py-1" rows={3} placeholder="Qu�, cu�ndo y c�mo" />
+                  <label className="block text-sm">Descripciï¿½n</label>
+                  <textarea value={form.descripcion} onChange={e=>setForm({...form, descripcion:e.target.value})} className="w-full rounded border border-slate-300 px-2 py-1" rows={3} placeholder="Quï¿½, cuï¿½ndo y cï¿½mo" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
@@ -165,7 +177,7 @@
               <h2 className="mb-3 text-lg font-semibold">Acciones</h2>
               <div className="flex flex-wrap gap-2">
                 <button className="btn primary" onClick={()=>setShowCreate(true)}>Crear nuevo reto</button>
-                <button className="btn" onClick={()=>setShowDelete(true)}>Borrar</button>
+                <button className="btn" onClick={()=>setShowDelete(true)} data-action="delete">Borrar</button>
               </div>
 
               {showCreate && (
@@ -183,20 +195,20 @@
               {showDelete && (
                 <div className="modal-mask">
                   <div className="modal-card" style={{width:'min(92%,560px)'}}>
-                    <div className="mb-3 text-lg font-semibold">Selecciona cu�l de ellos quieres eliminar</div>
+                    <div className="mb-3 text-lg font-semibold">Selecciona cuï¿½l de ellos quieres eliminar</div>
                     {retos.length===0 ? (
                       <div className="text-sm">No hay retos para borrar.</div>
                     ) : (
                       <div className="space-y-3">
                         <select className="w-full rounded border border-slate-300 px-2 py-2" value={delId} onChange={e=>setDelId(e.target.value)}>
-                          <option value="">� Selecciona un reto �</option>
+                          <option value="">ï¿½ Selecciona un reto ï¿½</option>
                           {retos.map(r=> (
                             <option key={r.id} value={r.id}>{r.nombre} ({r.inicio} ? {r.fin})</option>
                           ))}
                         </select>
                         <div className="flex items-center justify-end gap-2">
                           <button className="btn" onClick={()=>setShowDelete(false)}>Cancelar</button>
-                          <button className="btn primary" onClick={()=>{ if (delId) { setShowDelete(false); setDelId(''); deleteReto(delId);} }}>Aceptar</button>
+                          <button className="btn primary" data-action="delete" onClick={()=>{ if (delId) { setShowDelete(false); setDelId(''); deleteReto(delId);} }}>Aceptar</button>
                         </div>
                       </div>
                     )}
@@ -212,7 +224,7 @@
             <div className="rounded-2xl border border-slate-200 bg-white p-4">
               <h2 className="mb-2 text-lg font-semibold">Tus Retos</h2>
               {retos.length===0 ? (
-                <div className="text-sm">A�n no hay retos. Crea el primero para empezar.</div>
+                <div className="text-sm">Aï¿½n no hay retos. Crea el primero para empezar.</div>
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {retos.map(r=>{

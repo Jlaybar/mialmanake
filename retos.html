@@ -8,12 +8,14 @@
     <link rel="stylesheet" href="css/styles.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+      /* Fondo blanco para toda la página */
+      body { background: #ffffff !important; }
       /* Overrides específicos: textos en negro para cabecera y héroe */
       .site-header .brand { color: #000 !important; }
       .site-nav a { color: #000 !important; font-weight: 700 !important; }
       .site-nav a:hover { color: #1c007a !important; }
       .hero h1, .hero p { color: #000 !important; }
-    </style>
+      /* Toda la página de retos con texto negro */`r`n      main.retos, main.retos * { color: #000 !important; } `r`n </style> 
   </head>
   <body>
     <header class="site-header">
@@ -139,74 +141,71 @@
         const leadingEmpty = (firstWeekday + 6) % 7; // lunes=0
 
         // Bloque 0: selector + creación de retos
-        function BlockSelector() {
-          const [form, setForm] = useState({ nombre: '', descripcion: '', inicio: '', fin: '' });
-          return (
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-              <div className="lg:col-span-1 rounded-2xl border border-slate-200 bg-white p-4">
-                <h2 className="mb-2 text-lg font-semibold text-slate-800">Nuevo Reto</h2>
-                <div className="space-y-2">
-                  <div>
-                    <label className="block text-sm text-slate-600">Nombre</label>
-                    <input value={form.nombre} onChange={(e)=>setForm({...form, nombre:e.target.value})} type="text" className="w-full rounded border border-slate-300 px-2 py-1" placeholder="Ej. Leer 20 min diarios" />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-slate-600">Descripción</label>
-                    <textarea value={form.descripcion} onChange={(e)=>setForm({...form, descripcion:e.target.value})} className="w-full rounded border border-slate-300 px-2 py-1" rows={3} placeholder="¿Qué, cuándo y cómo?" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-sm text-slate-600">Inicio</label>
-                      <input value={form.inicio} onChange={(e)=>setForm({...form, inicio:e.target.value})} type="date" className="w-full rounded border border-slate-300 px-2 py-1" />
-                    </div>
-                    <div>
-                      <label className="block text-sm text-slate-600">Fin</label>
-                      <input value={form.fin} onChange={(e)=>setForm({...form, fin:e.target.value})} type="date" className="w-full rounded border border-slate-300 px-2 py-1" />
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-end">
-                    <button type="button" className="btn primary" onClick={()=>addReto(form)}>Guardar</button>
-                  </div>
-                </div>
-              </div>
+        function BlockNuevoReto() {
+  const [form, setForm] = useState({ nombre: '', descripcion: '', inicio: '', fin: '' });
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+      <h2 className="mb-2 text-lg font-semibold">Nuevo Reto</h2>
+      <div className="space-y-2">
+        <div>
+          <label className="block text-sm">Nombre</label>
+          <input value={form.nombre} onChange={(e)=>setForm({...form, nombre:e.target.value})} type="text" className="w-full rounded border border-slate-300 px-2 py-1" placeholder="Ej. Leer 20 min diarios" />
+        </div>
+        <div>
+          <label className="block text-sm">Descripción</label>
+          <textarea value={form.descripcion} onChange={(e)=>setForm({...form, descripcion:e.target.value})} className="w-full rounded border border-slate-300 px-2 py-1" rows={3} placeholder="¿Qué, cuándo y cómo?" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label className="block text-sm">Inicio</label>
+            <input value={form.inicio} onChange={(e)=>setForm({...form, inicio:e.target.value})} type="date" className="w-full rounded border border-slate-300 px-2 py-1" />
+          </div>
+          <div>
+            <label className="block text-sm">Fin</label>
+            <input value={form.fin} onChange={(e)=>setForm({...form, fin:e.target.value})} type="date" className="w-full rounded border border-slate-300 px-2 py-1" />
+          </div>
+        </div>
+        <div className="flex items-center justify-end">
+          <button type="button" className="btn primary" onClick={()=>addReto(form)}>Guardar</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-              <div className="lg:col-span-2 rounded-2xl border border-slate-200 bg-white p-4">
-                <h2 className="mb-2 text-lg font-semibold text-slate-800">Tus Retos</h2>
-                {retos.length === 0 ? (
-                  <div className="text-sm text-slate-600">Aún no hay retos. Crea el primero para empezar.</div>
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    {retos.map(r => (
-                      <button key={r.id} onClick={()=>setActivo(r.id)}
-                        className={`px-3 py-1 rounded-full border text-sm ${state.activoId===r.id? 'bg-emerald-100 border-emerald-300 text-emerald-800':'bg-white border-slate-300 text-slate-700'}`}
-                        title={`${r.nombre} (${r.inicio} → ${r.fin})`}>
-                        {r.nombre}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        }
-
-        // Bloque 1: calendario interactivo debajo del selector
+function BlockTusRetos() {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+      <h2 className="mb-2 text-lg font-semibold">Tus Retos</h2>
+      {retos.length === 0 ? (
+        <div className="text-sm">Aún no hay retos. Crea el primero para empezar.</div>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {retos.map(r => (
+            <button key={r.id} onClick={()=>setActivo(r.id)}
+              className={`px-3 py-1 rounded-full border text-sm ${state.activoId===r.id? 'bg-emerald-100 border-emerald-300 text-emerald-800':'bg-white border-slate-300 text-slate-700'}`}
+              title={`${r.nombre} (${r.inicio} → ${r.fin})`}>
+              {r.nombre}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}// Bloque 1: calendario interactivo debajo del selector
         function BlockCalendar() {
           const okBg = hexToRgba(OK_COLOR, 0.2);
           const failBg = hexToRgba(FAIL_COLOR, 0.18);
           const inRange = (dKey) => activo && withinRange(dKey, activo.inicio, activo.fin);
           return (
             <div className="mt-6">
-              <div className="mb-3 flex items-center justify-between">
-                <div className="text-lg font-semibold text-slate-800">{monthName}</div>
-                <div className="flex items-center gap-2">
-                  <button className="btn" onClick={()=>{ const m=new Date(year,month-1,1); setYear(m.getFullYear()); setMonth(m.getMonth()); }}>◀</button>
-                  <button className="btn" onClick={()=>{ const m=new Date(year,month+1,1); setYear(m.getFullYear()); setMonth(m.getMonth()); }}>▶</button>
-                </div>
+              <div className="mb-3 flex items-center justify-center gap-3">
+                <button className=" btn\ onClick={()=>{ const m=new Date(year,month-1,1); setYear(m.getFullYear()); setMonth(m.getMonth()); }}>&lt;</button>
+                <div className="text-lg font-semibold">{monthName}</div>
+                <button className="btn" onClick={()=>{ const m=new Date(year,month+1,1); setYear(m.getFullYear()); setMonth(m.getMonth()); }}>▶</button>
               </div>
 
-              {/* Cabecera días de la semana */}
-              <div className="max-w-4xl mx-auto mb-1 rounded-2xl ring-1 ring-slate-200 px-3 py-1 bg-white/70">
+              {/* Cabecera <div className="max-w-4xl mx-auto mb-1 rounded-2xl ring-1 ring-slate-200 px-3 py-1 bg-white/70">
                 <div className="grid grid-cols-7 text-center text-sm font-semibold">
                   {['L','M','X','J','V','S','D'].map(w => <div key={w} className="py-0.5">{w}</div>)}
                 </div>
@@ -244,7 +243,8 @@
 
         return (
           <div className="space-y-4">
-            <BlockSelector />
+            <BlockNuevoReto />
+            <BlockTusRetos />
             <BlockCalendar />
           </div>
         );

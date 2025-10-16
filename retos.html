@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MiAlmanake � Diario de Retos</title>
-    <meta name="description" content="Define objetivos, supera obstaculos y sigue tu progreso" />
+    <title>MiAlmanake — Diario de Retos</title>
+    <meta name="description" content="Define objetivos, supera obstáculos y sigue tu progreso" />
     <link rel="stylesheet" href="css/styles.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -15,19 +15,46 @@
       }
       body.wallpaper .site-header,
       body.wallpaper .hero,
-      body.wallpaper .site-footer { background: transparent !important; border-color: rgba(255,255,255,0.2) !important; }
+      body.wallpaper .site-footer {
+        background: transparent !important;
+        border-color: rgba(255,255,255,0.2) !important;
+      }
       body.wallpaper .site-header .brand,
       body.wallpaper .site-nav a,
       body.wallpaper .hero h1,
       body.wallpaper .hero p,
-      body.wallpaper .site-footer { color: #ffffff !important; }
-      body.wallpaper main.retos .rounded-2xl.bg-white { background: linear-gradient(135deg, #40a9e8, #007fcc) !important; border-color: rgba(255,255,255,0.25) !important; }`r`n      body.wallpaper main.retos .actions-panel { background: #ffffff !important; color: #111827 !important; border-color: rgba(0,0,0,0.1) !important; }
-      /* Botones primarios como en index */
-      body.wallpaper .btn.primary { background: linear-gradient(135deg, #fde047, #f59e0b) !important; border-color: transparent !important; color: #111827 !important; }
-      body.wallpaper .btn.primary:hover { background: linear-gradient(135deg, #f59e0b, #d97706) !important; color: #ffffff !important; }
-      .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; z-index: 50; }
-      .modal-card { width: min(92%, 680px); background: #fff; border-radius: 16px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-      /* Botones Cerrar/Borrar: naranja por defecto, rojo al pasar el ratÃ³n */
+      body.wallpaper .site-footer {
+        color: #ffffff !important;
+      }
+
+      /* Tarjetas/paneles */
+      body.wallpaper main.retos .panel.gradient {
+        background: linear-gradient(135deg, #40a9e8, #007fcc) !important;
+        border-color: rgba(255,255,255,0.25) !important;
+      }
+      body.wallpaper main.retos .panel.actions-panel {
+        background: #ffffff !important;
+        color: #111827 !important;
+        border-color: rgba(0,0,0,0.1) !important;
+      }
+      body.wallpaper main.retos .panel.calendar-panel {
+        background: #000000 !important;
+        color: #ffffff !important;
+        border-color: rgba(255,255,255,0.2) !important;
+      }
+      body.wallpaper main.retos .panel.calendar-panel * { color: #ffffff !important; }
+
+      /* Botones primarios como en index: amarillo por defecto, naranja al hover */
+      body.wallpaper .btn.primary {
+        background: linear-gradient(135deg, #fde047, #f59e0b) !important;
+        border-color: transparent !important;
+        color: #111827 !important;
+      }
+      body.wallpaper .btn.primary:hover {
+        background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+        color: #ffffff !important;
+      }
+      /* Botones Cerrar/Borrar/Aceptar: naranja base, rojo al hover */
       body.wallpaper .btn[data-action="close"],
       body.wallpaper .btn[data-action="delete"] {
         background: linear-gradient(135deg, #f59e0b, #d97706) !important;
@@ -38,9 +65,8 @@
       body.wallpaper .btn[data-action="delete"]:hover {
         background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
         color: #ffffff !important;
-      }          /* Bloque 1 (Calendario) fondo negro y texto blanco */
-      body.wallpaper main.retos .calendar-panel { background: #000000 !important; color: #ffffff !important; border-color: rgba(255,255,255,0.2) !important; }
-      body.wallpaper main.retos .calendar-panel * { color: #ffffff !important; }</style></style>
+      }
+    </style>
   </head>
   <body class="wallpaper">
     <header class="site-header">
@@ -49,7 +75,7 @@
         <nav class="site-nav" aria-label="Principal">
           <ul>
             <li><a href="index.html#inicio">Inicio</a></li>
-            <li><a href=" index.html#caracteristicas\>Caracter�sticas</a></li>
+            <li><a href="index.html#caracteristicas">Características</a></li>
             <li><a href="index.html#contacto">Contacto</a></li>
           </ul>
         </nav>
@@ -60,21 +86,21 @@
       <section class="hero">
         <div class="container">
           <h1>Diario de Retos</h1>
-          <p>Define objetivos, supera obstaculos y sigue tu progreso diario.</p>
+          <p>Define objetivos, supera obstáculos y sigue tu progreso diario.</p>
         </div>
       </section>
 
       <section>
         <div class="container">
           <div id="app"></div>
-          <noscript>Esta pï¿½gina requiere JavaScript para funcionar.</noscript>
+          <noscript>Esta página requiere JavaScript para funcionar.</noscript>
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
       <div class="container">
-        <p>ï¿½ <span id="year"></span> MiAlmanake. Todos los derechos reservados.</p>
+        <p>© <span id="year"></span> MiAlmanake. Todos los derechos reservados.</p>
       </div>
     </footer>
 
@@ -141,7 +167,7 @@
         function BlockNuevoReto({ onSaved }){
           const [form, setForm] = useState({ nombre:'', descripcion:'', inicio:'', fin:'' });
           return (
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 actions-panel">
+            <div className="panel rounded-2xl border p-4 actions-panel">
               <h2 className="mb-2 text-lg font-semibold">Nuevo Reto</h2>
               <div className="space-y-2">
                 <div>
@@ -149,8 +175,8 @@
                   <input value={form.nombre} onChange={e=>setForm({...form, nombre:e.target.value})} type="text" className="w-full rounded border border-slate-300 px-2 py-1" placeholder="Ej. Leer 20 min diarios" />
                 </div>
                 <div>
-                  <label className="block text-sm">Descripciï¿½n</label>
-                  <textarea value={form.descripcion} onChange={e=>setForm({...form, descripcion:e.target.value})} className="w-full rounded border border-slate-300 px-2 py-1" rows={3} placeholder="Quï¿½, cuï¿½ndo y cï¿½mo" />
+                  <label className="block text-sm">Descripción</label>
+                  <textarea value={form.descripcion} onChange={e=>setForm({...form, descripcion:e.target.value})} className="w-full rounded border border-slate-300 px-2 py-1" rows={3} placeholder="Qué, cuándo y cómo" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
@@ -175,11 +201,11 @@
           const [showDelete, setShowDelete] = useState(false);
           const [delId, setDelId] = useState('');
           return (
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 actions-panel">
+            <div className="panel rounded-2xl border p-4 actions-panel">
               <h2 className="mb-3 text-lg font-semibold">Acciones</h2>
               <div className="flex flex-wrap gap-2">
                 <button className="btn primary" onClick={()=>setShowCreate(true)}>Crear nuevo reto</button>
-                <button className="btn" onClick={()=>setShowDelete(true)} data-action="delete">Borrar</button>
+                <button className="btn" data-action="delete" onClick={()=>setShowDelete(true)}>Borrar</button>
               </div>
 
               {showCreate && (
@@ -187,7 +213,7 @@
                   <div className="modal-card">
                     <div className="mb-2 flex items-center justify-between">
                       <div className="text-lg font-semibold">Crear nuevo reto</div>
-                      <button className="btn" onClick={()=>setShowCreate(false)}>Cerrar</button>
+                      <button className="btn" data-action="close" onClick={()=>setShowCreate(false)}>Cerrar</button>
                     </div>
                     <BlockNuevoReto onSaved={()=>setShowCreate(false)} />
                   </div>
@@ -197,19 +223,19 @@
               {showDelete && (
                 <div className="modal-mask">
                   <div className="modal-card" style={{width:'min(92%,560px)'}}>
-                    <div className="mb-3 text-lg font-semibold">Selecciona cuï¿½l de ellos quieres eliminar</div>
+                    <div className="mb-3 text-lg font-semibold">Selecciona cuál de ellos quieres eliminar</div>
                     {retos.length===0 ? (
                       <div className="text-sm">No hay retos para borrar.</div>
                     ) : (
                       <div className="space-y-3">
                         <select className="w-full rounded border border-slate-300 px-2 py-2" value={delId} onChange={e=>setDelId(e.target.value)}>
-                          <option value="">ï¿½ Selecciona un reto ï¿½</option>
+                          <option value="">— Selecciona un reto —</option>
                           {retos.map(r=> (
-                            <option key={r.id} value={r.id}>{r.nombre} ({r.inicio} ? {r.fin})</option>
+                            <option key={r.id} value={r.id}>{r.nombre} ({r.inicio} → {r.fin})</option>
                           ))}
                         </select>
                         <div className="flex items-center justify-end gap-2">
-                          <button className="btn" onClick={()=>setShowDelete(false)}>Cancelar</button>
+                          <button className="btn" data-action="close" onClick={()=>setShowDelete(false)}>Cancelar</button>
                           <button className="btn primary" data-action="delete" onClick={()=>{ if (delId) { setShowDelete(false); setDelId(''); deleteReto(delId);} }}>Aceptar</button>
                         </div>
                       </div>
@@ -223,10 +249,10 @@
 
         function BlockTusRetos(){
           return (
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 actions-panel">
+            <div className="panel rounded-2xl border p-4 actions-panel">
               <h2 className="mb-2 text-lg font-semibold text-yellow-300">Tus Retos</h2>
               {retos.length===0 ? (
-                <div className="text-sm">Aï¿½n no hay retos. Crea el primero para empezar.</div>
+                <div className="text-sm">Aún no hay retos. Crea el primero para empezar.</div>
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {retos.map(r=>{
@@ -235,7 +261,7 @@
                     const fg = active ? getContrastText(r.color||'#3b82f6') : '#111827';
                     const border = active ? 'transparent' : (r.color||'#3b82f6');
                     return (
-                      <button key={r.id} onClick={()=>setActivo(r.id)} className="px-3 py-1 rounded-full border text-sm" style={{ background:bg, color:fg, borderColor:border }} title={`${r.nombre} (${r.inicio} ? ${r.fin})`}>
+                      <button key={r.id} onClick={()=>setActivo(r.id)} className="px-3 py-1 rounded-full border text-sm" style={{ background:bg, color:fg, borderColor:border }} title={`${r.nombre} (${r.inicio} → ${r.fin})`}>
                         {r.nombre}
                       </button>
                     );
@@ -251,14 +277,14 @@
           const failBg = hexToRgba(FAIL_COLOR, 0.18);
           const inRange = (dKey) => activo && withinRange(dKey, activo.inicio, activo.fin);
           return (
-            <div className=" mt-6 calendar-panel rounded-2xl border border-slate-200 p-4\>
+            <div className="panel rounded-2xl border p-4 calendar-panel">
               <div className="mb-3 flex items-center justify-center gap-3">
                 <button className="btn primary" onClick={()=>{ const m=new Date(year,month-1,1); setYear(m.getFullYear()); setMonth(m.getMonth()); }}>mes-anterior</button>
                 <div className="text-lg font-semibold">{monthName}</div>
                 <button className="btn primary" onClick={()=>{ const m=new Date(year,month+1,1); setYear(m.getFullYear()); setMonth(m.getMonth()); }}>mes-siguiente</button>
               </div>
 
-              <div className="max-w-4xl mx-auto mb-1 rounded-2xl ring-1 ring-slate-200 px-3 py-1 bg-white/70">
+              <div className="max-w-4xl mx-auto mb-1 rounded-2xl ring-1 ring-slate-200 px-3 py-1 bg-white/10">
                 <div className="grid grid-cols-7 text-center text-sm font-semibold">
                   {['L','M','X','J','V','S','D'].map(w => <div key={w} className="py-0.5">{w}</div>)}
                 </div>
@@ -272,22 +298,22 @@
                   const status = activo?.progreso?.[dKey] || null;
                   const inside = inRange(dKey);
                   const retoColor = activo?.color || '#3b82f6';
-                  const styleBg = status==='ok'? okBg : (status==='fail'? failBg : (inside ? hexToRgba(retoColor, 0.18) : '#ffffff'));
+                  const styleBg = status==='ok'? okBg : (status==='fail'? failBg : (inside ? hexToRgba(retoColor, 0.18) : '#0b0b0b'));
                   const ringCls = inside ? 'ring-1 ring-emerald-200' : '';
                   const borderCls = inside
                     ? (status==='ok' ? 'border-emerald-500' : status==='fail' ? 'border-rose-500' : '')
-                    : 'border-slate-200';
+                    : 'border-slate-700';
                   return (
                     <div key={dKey}
-                      className={`relative flex aspect-square flex-col items-center justify-start gap-1 rounded-lg border p-2 hover:bg-slate-50 ${isWeekend? 'border-dashed' : 'border-solid'} ${borderCls} ${ringCls} ${inside? '' : 'opacity-40'}`}
+                      className={`relative flex aspect-square flex-col items-center justify-start gap-1 rounded-lg border p-2 hover:bg-slate-800 ${isWeekend? 'border-dashed' : 'border-solid'} ${borderCls} ${ringCls} ${inside? '' : 'opacity-50'}`}
                       style={{ background: styleBg, borderColor: (inside && !status) ? retoColor : undefined }}
                       onClick={()=> inside && toggleDay(dKey)}
-                      title={inside? (status==='ok'?'Exito':'') + (status==='fail'?'Fallo':'') : 'Fuera de rango'}
+                      title={inside? (status==='ok'?'Éxito':'') + (status==='fail'?'Fallo':'') : 'Fuera de rango'}
                     >
-                      <div className={`absolute right-2 top-2 font-bold text-base ${inside? 'text-black':'text-slate-500'}`}>{day}</div>
-                      {status==='ok' && <div className="mt-6 text-2xl">?</div>}
-                      {status==='fail' && <div className="mt-6 text-2xl">?</div>}
-                      {!status && inside && <div className="mt-6 text-[11px] text-slate-400">Marca</div>}
+                      <div className={`absolute right-2 top-2 font-bold text-base ${inside? 'text-white':'text-slate-400'}`}>{day}</div>
+                      {status==='ok' && <div className="mt-6 text-2xl">✅</div>}
+                      {status==='fail' && <div className="mt-6 text-2xl">❌</div>}
+                      {!status && inside && <div className="mt-6 text-[11px] text-slate-300">Marca</div>}
                     </div>
                   );
                 })}
@@ -297,7 +323,15 @@
         }
 
         return (
-          <div className="space-y-4">`r`n            <div className="grid grid-cols-4 gap-4">`r`n              <div className="lg:col-span-1">`r`n                <BlockAccionesRetos />`r`n              </div>`r`n              <div className="lg:col-span-3">`r`n                <BlockTusRetos />`r`n              </div>`r`n            </div>
+          <div className="space-y-4">
+            <div className="grid grid-cols-4 gap-4 items-start">
+              <div className="col-span-1">
+                <BlockAccionesRetos />
+              </div>
+              <div className="col-span-3">
+                <BlockTusRetos />
+              </div>
+            </div>
             <BlockCalendar />
           </div>
         );
@@ -310,5 +344,4 @@
     <script src="js/main.js" defer></script>
   </body>
   </html>
-
 

@@ -1,4 +1,4 @@
-## Resumen
+﻿## Resumen
 
 - Añade “Mapa de TUS Emociones” (treemap) y otro treemap por Áreas de Vida con filtros de rango.
 - KPIs ampliados y legibles (negro, tamaños mayores): Registros, Desde, Hasta, Emociones presentes.
@@ -54,3 +54,11 @@
 - Rama: `graficas` → `main`
 - Archivos principales: `graficas.html`, `emociones.html`, `index.html`, `assets/images/*`
 
+
+## Revisores, Asignados y Etiquetas
+
+- Asignados: @tu_usuario
+- Revisores: @revisor1, @revisor2
+- Etiquetas sugeridas: enhancement, ui, data-viz
+
+> Sustituye los placeholders (@tu_usuario, @revisor1, @revisor2) por los usuarios de GitHub correspondientes al crear el PR en la web o con GitHub CLI.

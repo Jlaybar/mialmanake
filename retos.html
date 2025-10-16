@@ -8,6 +8,20 @@
     <link rel="stylesheet" href="css/styles.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+      /* Fondo y estilo como index (main) */
+      body.wallpaper {
+        background: url('assets/images/origami_01.png') center center / cover fixed no-repeat !important;
+        color: #ffffff;
+      }
+      body.wallpaper .site-header,
+      body.wallpaper .hero,
+      body.wallpaper .site-footer { background: transparent !important; border-color: rgba(255,255,255,0.2) !important; }
+      body.wallpaper .site-header .brand,
+      body.wallpaper .site-nav a,
+      body.wallpaper .hero h1,
+      body.wallpaper .hero p,
+      body.wallpaper .site-footer { color: #ffffff !important; }
+      body.wallpaper main.retos .rounded-2xl.bg-white { background: linear-gradient(135deg, #40a9e8, #007fcc) !important; border-color: rgba(255,255,255,0.25) !important; }
       body { background: #ffffff !important; }
       .site-header .brand { color: #000 !important; }
       .site-nav a { color: #000 !important; font-weight: 700 !important; }

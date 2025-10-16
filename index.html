@@ -35,6 +35,14 @@
       body.wallpaper .site-footer {
         color: #ffffff !important;
       }
+      /* Hover del menú principal */
+      body.wallpaper .site-nav a:hover {
+        color: #1c007a !important;
+      }
+      /* Hover de la marca (MiAlmanake) */
+      body.wallpaper .site-header .brand:hover {
+        color: #1c007a !important;
+      }
 
       /* Botones "Entrar" a amarillo con degradado */
       body.wallpaper .btn.primary {
@@ -47,10 +55,20 @@
         background: linear-gradient(135deg, #f59e0b, #d97706) !important; /* ámbar → naranja fuerte */
         color: #ffffff !important; /* texto blanco al pasar el ratón */
       }
-      /* Botón Contacto en el héroe con fondo naranja */
-      body.wallpaper .hero .actions a.btn[href="#contacto"] {
+      /* "Ver más" (hero) con el mismo hover que Entrar */
+      body.wallpaper .hero .actions a.btn.primary:hover {
         background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+        color: #ffffff !important;
+      }
+      /* Botón Contacto en el héroe con fondo azul (igual a tarjetas) */
+      body.wallpaper .hero .actions a.btn[href="#contacto"] {
+        background: linear-gradient(135deg, #40a9e8, #007fcc) !important;
         border-color: transparent !important;
+        color: #ffffff !important;
+      }
+      /* Hover del botón Contacto: naranja más oscuro, texto blanco */
+      body.wallpaper .hero .actions a.btn[href="#contacto"]:hover {
+        background: linear-gradient(135deg, #d97706, #b45309) !important;
         color: #ffffff !important;
       }
     </style>

@@ -232,6 +232,19 @@
         return top; // puede ser null
       }
 
+      // Mapea color HEX a nombre base para buscar imagen de fondo
+      function baseColorKeyFromHex(hex) {
+        if (!hex || typeof hex !== 'string') return null;
+        const h = hex.toLowerCase();
+        if (h === '#22c55e') return 'verde';     // Amor propio
+        if (h === '#ef4444') return 'rojo';      // Enfado
+        if (h === '#3b82f6') return 'azul';      // Tristeza
+        if (h === '#f97316') return 'naranja';   // Amor
+        if (h === '#7e22ce') return 'morado';    // Miedo
+        if (h === '#eab308') return 'amarillo';  // Alegría
+        return null;
+      }
+
       // Cuenta de colores por mes
       function countColorsMonth(data, year, month) {
         const counts = new Map();
@@ -510,6 +523,41 @@
             .btn.primary{ background: linear-gradient(135deg, ${primary}, ${primary700}); }
             .site-footer{ border-top-color: ${borderTone}; }
           `;
+        }, [monthColor]);
+
+        // Intenta cargar imagen de fondo según el color dominante del mes
+        useEffect(() => {
+          const key = baseColorKeyFromHex(monthColor);
+          const body = document.body;
+          let canceled = false;
+
+          function clearBg() {
+            if (body.getAttribute('data-bg-managed') === '1') {
+              body.style.backgroundImage = '';
+              body.style.backgroundSize = '';
+              body.style.backgroundPosition = '';
+              body.style.backgroundRepeat = '';
+              body.style.backgroundAttachment = '';
+              body.removeAttribute('data-bg-managed');
+            }
+          }
+
+          if (!key) { clearBg(); return; }
+          const src = `assets/images/fondo_${key}.png`;
+          const img = new Image();
+          img.onload = () => {
+            if (canceled) return;
+            body.style.backgroundImage = `url(${src})`;
+            body.style.backgroundSize = 'cover';
+            body.style.backgroundPosition = 'center';
+            body.style.backgroundRepeat = 'no-repeat';
+            body.style.backgroundAttachment = 'fixed';
+            body.setAttribute('data-bg-managed', '1');
+          };
+          img.onerror = () => { if (!canceled) clearBg(); };
+          img.src = src;
+
+          return () => { canceled = true; };
         }, [monthColor]);
 
         const totalDays = daysInMonth(year, month);

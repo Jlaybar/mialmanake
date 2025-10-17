@@ -446,7 +446,7 @@
                 const t = (s && e) ? (Math.floor((e - s)/86400000) + 1) : 0;
                 const ok = Object.entries(r.progreso||{}).filter(([k,v])=>v==='ok' && withinRange(k, r.inicio, r.fin)).length;
                 const pct = t>0 ? Math.round(ok*100/t) : 0;
-                return `${(r.descripcion||'').trim()}\n% exito: ${pct}%`;
+                return `${(r.descripcion||'').trim()}\n${pct}% de exito`;
               });
               btns.forEach((b,i)=>{ if(tips[i]!==undefined) b.title = tips[i]; });
             }catch{}

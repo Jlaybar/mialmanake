@@ -313,7 +313,7 @@
         function BlockNuevoReto({ onSaved }){
           const [form, setForm] = useState({ nombre:'', descripcion:'', inicio:'', fin:'' });
           return (
-            <div className="panel rounded-2xl border p-4 actions-panel">
+            <div className="panel rounded-2xl border p-4 actions-panel" data-panel="tus-retos">
               <h2 className="mb-2 text-lg font-semibold">Nuevo Reto</h2>
               <div className="space-y-2">
                 <div>
@@ -383,7 +383,7 @@
           const openDelete = () => { setDeleteClosing(false); setShowDelete(true); };
           const closeDelete = () => { setDeleteClosing(true); setTimeout(()=>{ setShowDelete(false); setDeleteClosing(false); }, 180); };
           return (
-            <div className="panel rounded-2xl border p-4 actions-panel">
+            <div className="panel rounded-2xl border p-4 actions-panel" data-panel="tus-retos">
               <h2 className="mb-3 text-lg font-semibold text-yellow-500">Define tu Reto</h2>
               <div className="flex flex-wrap gap-2">
                 <button className="btn primary" data-action="new" onClick={openCreate}>Nuevo</button>
@@ -430,6 +430,24 @@
         }
 
         function BlockTusRetos(){
+          // Ajusta tooltips: descripción + % exito (ok/total)
+          useEffect(()=>{
+            try{
+              const panels = Array.from(document.querySelectorAll('.actions-panel'));
+              const root = panels.find(el => el.textContent && el.textContent.indexOf('Elige tu Reto') !== -1) || panels[0];
+              if(!root) return;
+              const btns = Array.from(root.querySelectorAll('button'));
+              btns.forEach(b => b.removeAttribute('title'));
+              const tips = (retos||[]).map(r=>{
+                const s = parseKey(r.inicio), e = parseKey(r.fin);
+                const t = (s && e) ? (Math.floor((e - s)/86400000) + 1) : 0;
+                const ok = Object.entries(r.progreso||{}).filter(([k,v])=>v==='ok' && withinRange(k, r.inicio, r.fin)).length;
+                const pct = t>0 ? Math.round(ok*100/t) : 0;
+                return `${(r.descripcion||'').trim()}\n% exito: ${pct}%`;
+              });
+              btns.forEach((b,i)=>{ if(tips[i]!==undefined) b.title = tips[i]; });
+            }catch{}
+          }, [retos, state.activoId]);
           return (
             <div className="panel rounded-2xl border p-4 actions-panel">
               <h2 className="mb-2 text-lg font-semibold text-blue-500">Elige tu Reto</h2>

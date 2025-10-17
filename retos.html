@@ -440,6 +440,7 @@
               // Asegura tamaño igual a botones 'Nuevo' y 'Borrar'
               btns.forEach(b => { try { b.classList.add('btn'); b.classList.remove('px-3','py-1','rounded-full','border','text-sm'); } catch {} });
               btns.forEach(b => b.removeAttribute('title'));
+              btns.forEach(b => { try { b.classList.add('border-2','hover:border-emerald-500'); } catch {} });
               const tips = (retos||[]).map(r=>{
                 const s = parseKey(r.inicio), e = parseKey(r.fin);
                 const t = (s && e) ? (Math.floor((e - s)/86400000) + 1) : 0;

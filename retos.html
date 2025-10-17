@@ -44,6 +44,8 @@
       }
       body.wallpaper main.retos .panel.calendar-panel * { color: #ffffff !important; }
       body.wallpaper main.retos .panel.calendar-panel .day-num { color: #111827 !important; }
+      body.wallpaper main.retos .panel.calendar-panel .day.status-ok .day-num,
+      body.wallpaper main.retos .panel.calendar-panel .day.status-fail .day-num { color: #ffffff !important; }
       
 
       /* Botones primarios como en index: amarillo por defecto, naranja al hover */
@@ -205,8 +207,8 @@
 
       // Datos
       const STORAGE_KEY = 'retos.v1';
-      const OK_COLOR = '#22c55e';
-      const FAIL_COLOR = '#ef4444';
+      const OK_COLOR = 'linear-gradient(135deg, #22c55e, #16a34a)';
+      const FAIL_COLOR = 'linear-gradient(135deg, #ef4444, #b91c1c)';
       const makeId = () => `r_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`;
       const withinRange = (key, startKey, endKey) => !!startKey && !!endKey && key >= startKey && key <= endKey;
 
@@ -411,7 +413,7 @@
                     : 'border-slate-700';
                   return (
                     <div key={dKey}
-                      className={`relative flex aspect-square flex-col items-center justify-start gap-1 rounded-lg border p-2 hover:bg-white ${isWeekend? 'border-dashed' : 'border-solid'} ${borderCls} ${ringCls} ${inside? '' : 'opacity-50'}`}
+                      className={`day relative flex aspect-square flex-col items-center justify-start gap-1 rounded-lg border p-2 hover:bg-white ${isWeekend? 'border-dashed' : 'border-solid'} ${borderCls} ${ringCls} ${inside? '' : 'opacity-50'} ${status==='ok' ? 'status-ok' : ''} ${status==='fail' ? 'status-fail' : ''}`}
                       style={{ background: styleBg, borderColor: (inside && !status) ? retoColor : undefined }}
                       onClick={()=> inside && toggleDay(dKey)}
                       title={inside? (status==='ok'?'Éxito':'') + (status==='fail'?'Fallo':'') : 'Fuera de rango'}

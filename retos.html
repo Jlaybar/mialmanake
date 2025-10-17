@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MiAlmanake — Diario de Retos</title>
+    <meta name="description" content="Define objetivos, supera obstáculos y sigue tu progreso" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Fondo y estilo como index (main) */
+      body.wallpaper {
+        background: url('assets/images/origami_01.png') center center / cover fixed no-repeat !important;
+        color: #ffffff;
+      }
+      body.wallpaper .site-header,
+      body.wallpaper .hero,
+      body.wallpaper .site-footer {
+        background: transparent !important;
+        border-color: rgba(255,255,255,0.2) !important;
+      }
+      body.wallpaper .site-header .brand,
+      body.wallpaper .site-nav a,
+      body.wallpaper .hero h1,
+      body.wallpaper .hero p,
+      body.wallpaper .site-footer {
+        color: #ffffff !important;
+      }
+
+      /* Tarjetas/paneles */
+      body.wallpaper main.retos .panel.gradient {
+        background: linear-gradient(135deg, #40a9e8, #007fcc) !important;
+        border-color: rgba(255,255,255,0.25) !important;
+      }
+      body.wallpaper main.retos .panel.actions-panel {
+        background: #ffffff !important;
+        color: #111827 !important;
+        border-color: rgba(0,0,0,0.1) !important;
+      }
+      body.wallpaper main.retos .panel.calendar-panel {
+        background: transparent !important;
+        color: #ffffff !important;
+        border-color: rgba(255,255,255,0.2) !important;
+      }
+      body.wallpaper main.retos .panel.calendar-panel * { color: #ffffff !important; }
+      body.wallpaper main.retos .panel.calendar-panel .day-num { color: #111827 !important; }
+      body.wallpaper main.retos .panel.calendar-panel .day.status-ok .day-num,
+      body.wallpaper main.retos .panel.calendar-panel .day.status-fail .day-num { color: #ffffff !important; }
+      
+
+      /* Botones primarios como en index: amarillo por defecto, naranja al hover */
+      body.wallpaper .btn.primary {
+        background: linear-gradient(135deg, #fde047, #f59e0b) !important;
+        border-color: transparent !important;
+        color: #111827 !important;
+      }
+      body.wallpaper .btn.primary:hover {
+        background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+        color: #ffffff !important;
+      }
+      /* Hover verde solo para el botón 'Nuevo' del panel de acciones */
+      body.wallpaper main.retos .panel.actions-panel .btn.primary[data-action="new"]:hover {
+        background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+        color: #ffffff !important;
+        border-color: transparent !important;
+      }
+      /* Botones Cerrar/Borrar/Aceptar: naranja base, rojo al hover */
+      body.wallpaper .btn[data-action="close"] {
+        background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+        border-color: transparent !important;
+        color: #ffffff !important;
+      }
+      /* Botón Borrar con base amarilla y texto negro */
+      body.wallpaper .btn[data-action="delete"] {
+        background: linear-gradient(135deg, #fde047, #f59e0b) !important;
+        border-color: transparent !important;
+        color: #111827 !important;
+      }
+      body.wallpaper .btn[data-action="close"]:hover,
+      body.wallpaper .btn[data-action="delete"]:hover {
+        background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
+        color: #ffffff !important;
+      }
+
+      /* Modal centrado pantalla completa */
+      .modal-mask {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        backdrop-filter: blur(2px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        z-index: 1000;
+        opacity: 0;
+        animation: modal-fade-in 180ms ease-out forwards;
+      }
+      .modal-card {
+        width: min(92%, 640px);
+        max-height: 92vh;
+        overflow: auto;
+        border-radius: 16px;
+        background: transparent; /* deja ver el panel interno */
+        box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+        animation: modal-pop-in 200ms ease-out forwards;
+        border: 2px solid rgba(255,255,255,0.6);
+
+      }
+      /* Estilo específico para la modal de borrar */
+      .modal-card.delete-card {
+        background: transparent !important;
+        border: 2px solid rgba(255,255,255,0.6);
+      }
+      .modal-card.delete-card > .mb-3 { color: #facc15 !important; }
+
+      .modal-mask.is-closing { animation: modal-fade-out 160ms ease-in forwards; }
+      .modal-mask.is-closing .modal-card { animation: modal-pop-out 160ms ease-in forwards; }
+
+      /* Hover verde para botón Aceptar dentro de la modal de borrar */
+      .modal-card.delete-card .btn[data-action="delete"]:hover {
+        background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+        color: #ffffff !important;
+        border-color: transparent !important;
+      }
+
+      /* Hover verde para botón Guardar dentro de la modal de crear reto */
+      .modal-card.create-card .btn.primary:hover {
+        background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+        color: #ffffff !important;
+        border-color: transparent !important;
+      }
+
+      @keyframes modal-fade-in { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes modal-fade-out { from { opacity: 1; } to { opacity: 0; } }
+      @keyframes modal-pop-in {
+        0% { opacity: 0; transform: translateY(10px) scale(0.98); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      @keyframes modal-pop-out {
+        0% { opacity: 1; transform: translateY(0) scale(1); }
+        100% { opacity: 0; transform: translateY(6px) scale(0.985); }
+      }
+    </style>
+  </head>
+  <body class="wallpaper">
+    <header class="site-header">
+      <div class="container">
+        <a class="brand" href="index.html">MiAlmanake</a>
+        <nav class="site-nav" aria-label="Principal">
+          <ul>
+            <li><a href="index.html#inicio">Inicio</a></li>
+            <li><a href="index.html#caracteristicas">Características</a></li>
+            <li><a href="index.html#contacto">Contacto</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="diario-retos" class="section retos">
+      <section class="hero">
+        <div class="container">
+          <h1>Diario de Retos</h1>
+          <p>Define objetivos, supera obstáculos y sigue tu progreso diario.</p>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div id="app"></div>
+          <noscript>Esta página requiere JavaScript para funcionar.</noscript>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>© <span id="year"></span> MiAlmanake. Todos los derechos reservados.</p>
+      </div>
+    </footer>
+
+    <!-- React + ReactDOM (UMD) -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel para interpretar JSX (sin build) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+      const { useEffect, useMemo, useState } = React;
+
+      // Utilidades de fecha
+      const pad = (n) => (n < 10 ? `0${n}` : `${n}`);
+      const dateKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+      const parseKey = (k) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(k); if (!m) return null; return new Date(+m[1], +m[2]-1, +m[3]); };
+      const daysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
+      const firstDayOfMonth = (y, m) => new Date(y, m, 1).getDay();
+      const isWeekendDate = (y, m, d) => { const wd = new Date(y, m, d).getDay(); return wd === 0 || wd === 6; };
+      const humanMonth = (y, m) => new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(new Date(y, m, 1));
+      const hexToRgba = (hex, alpha = 0.18) => { const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); if (!m) return hex; const r = parseInt(m[1],16), g = parseInt(m[2],16), b = parseInt(m[3],16); return `rgba(${r},${g},${b},${alpha})`; };
+      const getContrastText = (hex) => { const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); if (!m) return '#111827'; const r=parseInt(m[1],16)/255, g=parseInt(m[2],16)/255, b=parseInt(m[3],16)/255; const s=[r,g,b].map(v=>v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4)); const L=0.2126*s[0]+0.7152*s[1]+0.0722*s[2]; return L>0.5?'#111827':'#ffffff'; };
+
+      // Paleta y helpers de color por reto
+      const RETO_COLORS = ['#0ea5e9','#3b82f6','#1d4ed8','#8b5cf6','#7c3aed','#a78bfa','#22c55e','#10b981','#059669','#14b8a6','#06b6d4','#f59e0b','#f97316','#ef4444'];
+      const pickRetoColor = (existing) => { const used=new Set((existing||[]).map(r=>r.color).filter(Boolean)); for(const c of RETO_COLORS){ if(!used.has(c)) return c; } return RETO_COLORS[(existing?.length||0)%RETO_COLORS.length]; };
+
+      // Datos
+      const STORAGE_KEY = 'retos.v1';
+      const OK_COLOR = 'linear-gradient(135deg, #22c55e, #16a34a)';
+      const FAIL_COLOR = 'linear-gradient(135deg, #ef4444, #b91c1c)';
+      const makeId = () => `r_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`;
+      const withinRange = (key, startKey, endKey) => !!startKey && !!endKey && key >= startKey && key <= endKey;
+
+      function RetosApp() {
+        const now = new Date();
+        const [year, setYear] = useState(now.getFullYear());
+        const [month, setMonth] = useState(now.getMonth());
+        const [state, setState] = useState({ retos: [], activoId: null });
+
+        // Seleccionar reto activo
+        const setActivo = (id) => setState(s => ({ ...s, activoId: id }));
+
+        // Alternar estado de un día: null -> 'ok' -> 'fail' -> null
+        const toggleDay = (dKey) => {
+          setState((s) => {
+            const retosArr = Array.isArray(s.retos) ? [...s.retos] : [];
+            const idx = retosArr.findIndex(r => r.id === s.activoId);
+            if (idx === -1) return s;
+            const reto = { ...retosArr[idx] };
+            const prog = { ...(reto.progreso || {}) };
+            const current = prog[dKey] || null;
+            const next = current === null ? 'ok' : (current === 'ok' ? 'fail' : null);
+            if (next === null) {
+              delete prog[dKey];
+            } else {
+              prog[dKey] = next;
+            }
+            reto.progreso = prog;
+            retosArr[idx] = reto;
+            return { ...s, retos: retosArr };
+          });
+        };
+
+        useEffect(()=>{ try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw){ setState(JSON.parse(raw)); } }catch{} },[]);
+        useEffect(()=>{ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch{} },[state]);
+
+        const retos = state.retos || [];
+        const activo = useMemo(()=> retos.find(r=>r.id===state.activoId) || null, [retos, state.activoId]);
+
+        useEffect(()=>{ if(!activo) return; const start = parseKey(activo.inicio); if(start){ setYear(start.getFullYear()); setMonth(start.getMonth()); } }, [state.activoId]);
+
+        const addReto = (form) => {
+          const nombre=(form.nombre||'').trim(); const descripcion=(form.descripcion||'').trim(); const inicio=form.inicio; const fin=form.fin;
+          if(!nombre || !inicio || !fin || fin<inicio) return;
+          const color = pickRetoColor(retos);
+          const ret = { id: makeId(), nombre, descripcion, inicio, fin, color, progreso: {} };
+          setState(s=>({ retos:[...retos, ret], activoId: ret.id }));
+          return ret;
+        };
+
+        const deleteReto = (id) => { setState(s=>({ ...s, retos:(s.retos||[]).filter(r=>r.id!==id), activoId: s.activoId===id? null : s.activoId })); };
+
+        const monthName = humanMonth(year, month);
+        const firstWeekday = firstDayOfMonth(year, month);
+        const leadingEmpty = (firstWeekday + 6) % 7;
+
+        function BlockNuevoReto({ onSaved }){
+          const [form, setForm] = useState({ nombre:'', descripcion:'', inicio:'', fin:'' });
+          return (
+            <div className="panel rounded-2xl border p-4 actions-panel">
+              <h2 className="mb-2 text-lg font-semibold">Nuevo Reto</h2>
+              <div className="space-y-2">
+                <div>
+                  <label className="block text-sm">Nombre</label>
+                  <input value={form.nombre} onChange={e=>setForm({...form, nombre:e.target.value})} type="text" className="w-full rounded border border-slate-300 px-2 py-1" placeholder="Ej. Leer 20 min diarios" />
+                </div>
+                <div>
+                  <label className="block text-sm">Descripción</label>
+                  <textarea value={form.descripcion} onChange={e=>setForm({...form, descripcion:e.target.value})} className="w-full rounded border border-slate-300 px-2 py-1" rows={3} placeholder="Qué, cuándo y cómo" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-sm">Inicio</label>
+                    <input value={form.inicio} onChange={e=>setForm({...form, inicio:e.target.value})} type="date" className="w-full rounded border border-slate-300 px-2 py-1" />
+                  </div>
+                  <div>
+                    <label className="block text-sm">Fin</label>
+                    <input value={form.fin} onChange={e=>setForm({...form, fin:e.target.value})} type="date" className="w-full rounded border border-slate-300 px-2 py-1" />
+                  </div>
+                </div>
+                <div className="flex items-center justify-end">
+                  <button type="button" className="btn primary" onClick={()=>{ const created = addReto(form); if(created && onSaved) onSaved(created); }}>Guardar</button>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        function BlockAccionesRetos(){
+          const [showCreate, setShowCreate] = useState(false);
+          const [createClosing, setCreateClosing] = useState(false);
+          const [showDelete, setShowDelete] = useState(false);
+          const [deleteClosing, setDeleteClosing] = useState(false);
+          const [delId, setDelId] = useState('');
+
+          const openCreate = () => { setCreateClosing(false); setShowCreate(true); };
+          const closeCreate = () => { setCreateClosing(true); setTimeout(()=>{ setShowCreate(false); setCreateClosing(false); }, 180); };
+          const openDelete = () => { setDeleteClosing(false); setShowDelete(true); };
+          const closeDelete = () => { setDeleteClosing(true); setTimeout(()=>{ setShowDelete(false); setDeleteClosing(false); }, 180); };
+          return (
+            <div className="panel rounded-2xl border p-4 actions-panel">
+              <h2 className="mb-3 text-lg font-semibold text-yellow-500">Define tu Reto</h2>
+              <div className="flex flex-wrap gap-2">
+                <button className="btn primary" data-action="new" onClick={openCreate}>Nuevo</button>
+                <button className="btn" data-action="delete" onClick={openDelete}>Borrar</button>
+              </div>
+
+              {showCreate && (
+                <div className={`modal-mask ${createClosing ? 'is-closing' : ''}`} onClick={(e)=>{ if(e.target===e.currentTarget) closeCreate(); }}>
+                  <div className="modal-card create-card">
+                    <div className="mb-2 flex items-center justify-between">
+                      <div className="text-lg font-bold text-yellow-500">Nuevo</div>
+                      <button className="btn" data-action="close" onClick={closeCreate}>Cerrar</button>
+                    </div>
+                    <BlockNuevoReto onSaved={closeCreate} />
+                  </div>
+                </div>
+              )}
+
+              {showDelete && (
+                <div className={`modal-mask ${deleteClosing ? 'is-closing' : ''}`} onClick={(e)=>{ if(e.target===e.currentTarget) closeDelete(); }}>
+                  <div className="modal-card delete-card" style={{width:'min(92%,560px)'}}>
+                    <div className="mb-3 font-bold text-yellow-500">Selecciona cuál de ellos quieres eliminar</div>
+                    {retos.length===0 ? (
+                      <div className="text-sm">No hay retos para borrar.</div>
+                    ) : (
+                      <div className="space-y-3">
+                        <select className="w-full rounded border border-slate-300 px-2 py-2" value={delId} onChange={e=>setDelId(e.target.value)}>
+                          <option value="">— Selecciona un reto —</option>
+                          {retos.map(r=> (
+                            <option key={r.id} value={r.id}>{r.nombre} ({r.inicio} → {r.fin})</option>
+                          ))}
+                        </select>
+                        <div className="flex items-center justify-end gap-2">
+                          <button className="btn" data-action="close" onClick={closeDelete}>Cancelar</button>
+                          <button className="btn primary" data-action="delete" onClick={()=>{ if (delId) { closeDelete(); setDelId(''); deleteReto(delId);} }}>Aceptar</button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        function BlockTusRetos(){
+          return (
+            <div className="panel rounded-2xl border p-4 actions-panel">
+              <h2 className="mb-2 text-lg font-semibold text-blue-500">Elige tu Reto</h2>
+              {retos.length===0 ? (
+                <div className="text-sm">Aún no hay retos. Crea el primero para empezar.</div>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {retos.map(r=>{
+                    const active = state.activoId===r.id;
+                    const bg = active ? (r.color||'#3b82f6') : hexToRgba(r.color||'#3b82f6', 0.18);
+                    const fg = active ? getContrastText(r.color||'#3b82f6') : '#111827';
+                    const border = active ? 'transparent' : (r.color||'#3b82f6');
+                    return (
+                      <button key={r.id} onClick={()=>setActivo(r.id)} className="px-3 py-1 rounded-full border text-sm" style={{ background:bg, color:fg, borderColor:border }} title={`${r.nombre} (${r.inicio} → ${r.fin})`}>
+                        {r.nombre}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        function BlockCalendar(){
+          const okBg = OK_COLOR; // verde normal
+          const failBg = FAIL_COLOR; // rojo normal
+          const inRange = (dKey) => activo && withinRange(dKey, activo.inicio, activo.fin);
+          return (
+            <div className="panel rounded-2xl border p-4 calendar-panel">
+              <div className="mb-3 flex items-center justify-center gap-3">
+                <button className="btn primary" onClick={()=>{ const m=new Date(year,month-1,1); setYear(m.getFullYear()); setMonth(m.getMonth()); }}>mes-anterior</button>
+                <div className="text-lg font-semibold">{monthName}</div>
+                <button className="btn primary" onClick={()=>{ const m=new Date(year,month+1,1); setYear(m.getFullYear()); setMonth(m.getMonth()); }}>mes-siguiente</button>
+              </div>
+
+              <div className="max-w-4xl mx-auto mb-1 rounded-2xl ring-1 ring-slate-200 px-3 py-1 bg-transparent">
+                <div className="grid grid-cols-7 text-center text-sm font-semibold">
+                  {['L','M','X','J','V','S','D'].map(w => <div key={w} className="py-0.5">{w}</div>)}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-7 gap-1 max-w-4xl mx-auto">
+                {Array.from({ length: leadingEmpty }).map((_,i)=><div key={`empty-${i}`} />)}
+                {Array.from({ length: daysInMonth(year, month) }).map((_, i) => {
+                  const day = i+1; const dKey = dateKey(new Date(year,month,day));
+                  const isWeekend = isWeekendDate(year,month,day);
+                  const status = activo?.progreso?.[dKey] || null;
+                  const inside = inRange(dKey);
+                  const retoColor = activo?.color || '#3b82f6';
+                  const styleBg = status==='ok' ? okBg : (status==='fail' ? failBg : '#ffffff');
+                  const ringCls = inside ? 'ring-1 ring-emerald-200' : '';
+                  const borderCls = inside
+                    ? (status==='ok' ? 'border-emerald-500' : status==='fail' ? 'border-rose-500' : '')
+                    : 'border-slate-700';
+                  return (
+                    <div key={dKey}
+                      className={`day relative flex aspect-square flex-col items-center justify-start gap-1 rounded-lg border p-2 hover:bg-white ${isWeekend? 'border-dashed' : 'border-solid'} ${borderCls} ${ringCls} ${inside? '' : 'opacity-50'} ${status==='ok' ? 'status-ok' : ''} ${status==='fail' ? 'status-fail' : ''}`}
+                      style={{ background: styleBg, borderColor: (inside && !status) ? retoColor : undefined }}
+                      onClick={()=> inside && toggleDay(dKey)}
+                      title={inside? (status==='ok'?'Éxito':'') + (status==='fail'?'Fallo':'') : 'Fuera de rango'}
+                    >
+                      <div className={`absolute right-2 top-2 font-bold text-base day-num ${inside? 'text-slate-900':'text-slate-400'}`}>{day}</div>
+                      {status==='ok' && <div className="mt-6 text-2xl">✅</div>}
+                      {status==='fail' && <div className="mt-6 text-2xl">❌</div>}
+                      {!status && inside && <div className="mt-6 text-[11px] text-slate-300">Marca</div>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <div className="space-y-4">
+            <div className="grid grid-cols-4 gap-4 items-start">
+              <div className="col-span-1">
+                <BlockAccionesRetos />
+              </div>
+              <div className="col-span-3">
+                <BlockTusRetos />
+              </div>
+            </div>
+            <BlockCalendar />
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById('app'));
+      root.render(<RetosApp />);
+    </script>
+
+    <script src="js/main.js" defer></script>
+  </body>
+  </html>

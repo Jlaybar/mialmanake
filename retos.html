@@ -489,21 +489,25 @@
             else if (it.pct >= 50) acc.bronce++;
             return acc;
           }, { oro:0, plata:0, bronce:0 });
+          const oroList = items.filter(it => it.pct >= 100).map(it => it.nombre);
+          const plataList = items.filter(it => it.pct >= 75 && it.pct < 100).map(it => it.nombre);
+          const bronceList = items.filter(it => it.pct >= 50 && it.pct < 75).map(it => it.nombre);
+          const joinLines = (arr) => (arr && arr.length ? arr.join('\n') : 'Sin logros');
           return (
             <div className="panel rounded-2xl border p-4 actions-panel">
               <h2 className="mb-2 text-lg font-semibold text-emerald-500">Tus logros</h2>
               <div className="flex items-center gap-2">
-                <div className="btn flex items-center gap-2 bg-white text-slate-800">
+                <div className="btn flex items-center gap-2 bg-white text-slate-800" title={joinLines(oroList)}>
                   <span>🥇</span>
                   <span>Oro</span>
                   <span className="font-semibold">{medals.oro}</span>
                 </div>
-                <div className="btn flex items-center gap-2 bg-white text-slate-800">
+                <div className="btn flex items-center gap-2 bg-white text-slate-800" title={joinLines(plataList)}>
                   <span>🥈</span>
                   <span>Plata</span>
                   <span className="font-semibold">{medals.plata}</span>
                 </div>
-                <div className="btn flex items-center gap-2 bg-white text-slate-800">
+                <div className="btn flex items-center gap-2 bg-white text-slate-800" title={joinLines(bronceList)}>
                   <span>🥉</span>
                   <span>Bronce</span>
                   <span className="font-semibold">{medals.bronce}</span>

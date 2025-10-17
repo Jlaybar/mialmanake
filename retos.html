@@ -145,9 +145,23 @@
       }
     </style>
     <style>
+      /* Calendar status icons (UTF-8 safe): replace inner garbled text with emojis */
+      .day.status-ok .mt-6.text-2xl { font-size: 0 !important; line-height: 0 !important; }
+      .day.status-ok .mt-6.text-2xl::after { content: '✅'; font-size: 1.5rem; line-height: 1; }
+      .day.status-fail .mt-6.text-2xl { font-size: 0 !important; line-height: 0 !important; }
+      .day.status-fail .mt-6.text-2xl::after { content: '❌'; font-size: 1.5rem; line-height: 1; }
+    </style>
+    <style>
       /* Overrides: fondos blancos para modales Crear y Borrar */
       .modal-card.create-card { background: #ffffff !important; }
       .modal-card.delete-card { background: #ffffff !important; }
+    </style>
+    <style>
+      /* Calendar status icons (override): use safe Unicode escapes */
+      .day.status-ok .mt-6.text-2xl { font-size: 0 !important; line-height: 0 !important; }
+      .day.status-ok .mt-6.text-2xl::after { content: "\2705"; font-size: 1.5rem; line-height: 1; }
+      .day.status-fail .mt-6.text-2xl { font-size: 0 !important; line-height: 0 !important; }
+      .day.status-fail .mt-6.text-2xl::after { content: "\274C"; font-size: 1.5rem; line-height: 1; }
     </style>
   </head>
   <body class="wallpaper">
@@ -222,6 +236,32 @@
         const [year, setYear] = useState(now.getFullYear());
         const [month, setMonth] = useState(now.getMonth());
         const [state, setState] = useState({ retos: [], activoId: null });
+
+        // Normaliza textos visibles con acentos mediante secuencias Unicode (independiente de encoding del archivo)
+        useEffect(() => {
+          try {
+            // Título y meta descripción
+            document.title = 'MiAlmanake \u2014 Diario de Retos';
+            const meta = document.querySelector('meta[name="description"]');
+            if (meta) meta.setAttribute('content', 'Define objetivos, supera obst\u00E1culos y sigue tu progreso');
+
+            // Nav: Características
+            const navCar = document.querySelector('a[href="index.html#caracteristicas"]');
+            if (navCar) navCar.textContent = 'Caracter\u00EDsticas';
+
+            // Hero: párrafo con obstáculos
+            const heroP = document.querySelector('.hero p');
+            if (heroP) heroP.textContent = 'Define objetivos, supera obst\u00E1culos y sigue tu progreso diario.';
+
+            // Footer: © año
+            const footerP = document.querySelector('.site-footer p');
+            if (footerP) {
+              const y = document.getElementById('year');
+              const yearText = y ? y.textContent : '';
+              footerP.innerHTML = '&copy; <span id="year">' + yearText + '</span> MiAlmanake. Todos los derechos reservados.';
+            }
+          } catch {}
+        }, []);
 
         // Seleccionar reto activo
         const setActivo = (id) => setState(s => ({ ...s, activoId: id }));
@@ -309,6 +349,35 @@
           const [deleteClosing, setDeleteClosing] = useState(false);
           const [delId, setDelId] = useState('');
 
+          // Ajusta textos de modales cuando están visibles
+          useEffect(() => {
+            try {
+              // Modal borrar: título y opción placeholder
+              const txt = document.querySelector('.modal-card.delete-card .mb-3');
+              if (txt && txt.textContent.includes('Selecciona')) {
+                txt.textContent = 'Selecciona cu\u00E1l de ellos quieres eliminar';
+              }
+              const sel = document.querySelector('.modal-card.delete-card select');
+              if (sel) {
+                const opt = sel.querySelector('option[value=""]');
+                if (opt) opt.textContent = '\u2014 Selecciona un reto \u2014';
+              }
+
+              // Modal crear: etiqueta y placeholder
+              const createCard = document.querySelector('.modal-card.create-card');
+              if (createCard) {
+                const labels = createCard.querySelectorAll('label');
+                labels.forEach(l => {
+                  if (l.textContent && l.textContent.trim().startsWith('Descripci')) {
+                    l.textContent = 'Descripci\u00F3n';
+                  }
+                });
+                const ta = createCard.querySelector('textarea');
+                if (ta) ta.placeholder = 'Qu\u00E9, cu\u00E1ndo y c\u00F3mo';
+              }
+            } catch {}
+          }, [showDelete, showCreate]);
+
           const openCreate = () => { setCreateClosing(false); setShowCreate(true); };
           const closeCreate = () => { setCreateClosing(true); setTimeout(()=>{ setShowCreate(false); setCreateClosing(false); }, 180); };
           const openDelete = () => { setDeleteClosing(false); setShowDelete(true); };
@@ -389,6 +458,15 @@
           const okBg = OK_COLOR; // verde normal
           const failBg = FAIL_COLOR; // rojo normal
           const inRange = (dKey) => activo && withinRange(dKey, activo.inicio, activo.fin);
+          // Asegura titles legibles en UTF-8 tras render
+          useEffect(() => {
+            try {
+              const root = document.querySelector('.calendar-panel');
+              if (!root) return;
+              root.querySelectorAll('.day.status-ok').forEach(el => { el.title = 'Exito'; });
+              root.querySelectorAll('.day.status-fail').forEach(el => { el.title = 'Fallo'; });
+            } catch {}
+          }, [year, month, activo?.progreso]);
           return (
             <div className="panel rounded-2xl border p-4 calendar-panel">
               <div className="mb-3 flex items-center justify-center gap-3">

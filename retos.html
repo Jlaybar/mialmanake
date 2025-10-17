@@ -56,12 +56,23 @@
         background: linear-gradient(135deg, #f59e0b, #d97706) !important;
         color: #ffffff !important;
       }
+      /* Hover verde solo para el botón 'Nuevo' del panel de acciones */
+      body.wallpaper main.retos .panel.actions-panel .btn.primary[data-action="new"]:hover {
+        background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+        color: #ffffff !important;
+        border-color: transparent !important;
+      }
       /* Botones Cerrar/Borrar/Aceptar: naranja base, rojo al hover */
-      body.wallpaper .btn[data-action="close"],
-      body.wallpaper .btn[data-action="delete"] {
+      body.wallpaper .btn[data-action="close"] {
         background: linear-gradient(135deg, #f59e0b, #d97706) !important;
         border-color: transparent !important;
         color: #ffffff !important;
+      }
+      /* Botón Borrar con base amarilla y texto negro */
+      body.wallpaper .btn[data-action="delete"] {
+        background: linear-gradient(135deg, #fde047, #f59e0b) !important;
+        border-color: transparent !important;
+        color: #111827 !important;
       }
       body.wallpaper .btn[data-action="close"]:hover,
       body.wallpaper .btn[data-action="delete"]:hover {
@@ -205,6 +216,30 @@
         const [month, setMonth] = useState(now.getMonth());
         const [state, setState] = useState({ retos: [], activoId: null });
 
+        // Seleccionar reto activo
+        const setActivo = (id) => setState(s => ({ ...s, activoId: id }));
+
+        // Alternar estado de un día: null -> 'ok' -> 'fail' -> null
+        const toggleDay = (dKey) => {
+          setState((s) => {
+            const retosArr = Array.isArray(s.retos) ? [...s.retos] : [];
+            const idx = retosArr.findIndex(r => r.id === s.activoId);
+            if (idx === -1) return s;
+            const reto = { ...retosArr[idx] };
+            const prog = { ...(reto.progreso || {}) };
+            const current = prog[dKey] || null;
+            const next = current === null ? 'ok' : (current === 'ok' ? 'fail' : null);
+            if (next === null) {
+              delete prog[dKey];
+            } else {
+              prog[dKey] = next;
+            }
+            reto.progreso = prog;
+            retosArr[idx] = reto;
+            return { ...s, retos: retosArr };
+          });
+        };
+
         useEffect(()=>{ try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw){ setState(JSON.parse(raw)); } }catch{} },[]);
         useEffect(()=>{ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch{} },[state]);
 
@@ -273,9 +308,9 @@
           const closeDelete = () => { setDeleteClosing(true); setTimeout(()=>{ setShowDelete(false); setDeleteClosing(false); }, 180); };
           return (
             <div className="panel rounded-2xl border p-4 actions-panel">
-              <h2 className="mb-3 text-lg font-semibold text-yellow-500">Acciones</h2>
+              <h2 className="mb-3 text-lg font-semibold text-yellow-500">Define tu Reto</h2>
               <div className="flex flex-wrap gap-2">
-                <button className="btn primary" onClick={openCreate}>Crear nuevo reto</button>
+                <button className="btn primary" data-action="new" onClick={openCreate}>Nuevo</button>
                 <button className="btn" data-action="delete" onClick={openDelete}>Borrar</button>
               </div>
 
@@ -283,7 +318,7 @@
                 <div className={`modal-mask ${createClosing ? 'is-closing' : ''}`} onClick={(e)=>{ if(e.target===e.currentTarget) closeCreate(); }}>
                   <div className="modal-card create-card">
                     <div className="mb-2 flex items-center justify-between">
-                      <div className="text-lg font-bold text-yellow-500">  Crear nuevo reto</div>
+                      <div className="text-lg font-bold text-yellow-500">Nuevo</div>
                       <button className="btn" data-action="close" onClick={closeCreate}>Cerrar</button>
                     </div>
                     <BlockNuevoReto onSaved={closeCreate} />
@@ -321,7 +356,7 @@
         function BlockTusRetos(){
           return (
             <div className="panel rounded-2xl border p-4 actions-panel">
-              <h2 className="mb-2 text-lg font-semibold text-blue-500">Tus Retos</h2>
+              <h2 className="mb-2 text-lg font-semibold text-blue-500">Elige tu Reto</h2>
               {retos.length===0 ? (
                 <div className="text-sm">Aún no hay retos. Crea el primero para empezar.</div>
               ) : (
@@ -344,8 +379,8 @@
         }
 
         function BlockCalendar(){
-          const okBg = hexToRgba(OK_COLOR, 0.2);
-          const failBg = hexToRgba(FAIL_COLOR, 0.18);
+          const okBg = OK_COLOR; // verde normal
+          const failBg = FAIL_COLOR; // rojo normal
           const inRange = (dKey) => activo && withinRange(dKey, activo.inicio, activo.fin);
           return (
             <div className="panel rounded-2xl border p-4 calendar-panel">
@@ -369,7 +404,7 @@
                   const status = activo?.progreso?.[dKey] || null;
                   const inside = inRange(dKey);
                   const retoColor = activo?.color || '#3b82f6';
-                  const styleBg = '#ffffff';
+                  const styleBg = status==='ok' ? okBg : (status==='fail' ? failBg : '#ffffff');
                   const ringCls = inside ? 'ring-1 ring-emerald-200' : '';
                   const borderCls = inside
                     ? (status==='ok' ? 'border-emerald-500' : status==='fail' ? 'border-rose-500' : '')

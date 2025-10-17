@@ -437,6 +437,8 @@
               const root = panels.find(el => el.textContent && el.textContent.indexOf('Elige tu Reto') !== -1) || panels[0];
               if(!root) return;
               const btns = Array.from(root.querySelectorAll('button'));
+              // Asegura tamaño igual a botones 'Nuevo' y 'Borrar'
+              btns.forEach(b => { try { b.classList.add('btn'); b.classList.remove('px-3','py-1','rounded-full','border','text-sm'); } catch {} });
               btns.forEach(b => b.removeAttribute('title'));
               const tips = (retos||[]).map(r=>{
                 const s = parseKey(r.inicio), e = parseKey(r.fin);

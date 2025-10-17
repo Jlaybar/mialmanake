@@ -38,11 +38,13 @@
         border-color: rgba(0,0,0,0.1) !important;
       }
       body.wallpaper main.retos .panel.calendar-panel {
-        background: #000000 !important;
+        background: transparent !important;
         color: #ffffff !important;
         border-color: rgba(255,255,255,0.2) !important;
       }
       body.wallpaper main.retos .panel.calendar-panel * { color: #ffffff !important; }
+      body.wallpaper main.retos .panel.calendar-panel .day-num { color: #111827 !important; }
+      
 
       /* Botones primarios como en index: amarillo por defecto, naranja al hover */
       body.wallpaper .btn.primary {
@@ -65,6 +67,68 @@
       body.wallpaper .btn[data-action="delete"]:hover {
         background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
         color: #ffffff !important;
+      }
+
+      /* Modal centrado pantalla completa */
+      .modal-mask {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        backdrop-filter: blur(2px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        z-index: 1000;
+        opacity: 0;
+        animation: modal-fade-in 180ms ease-out forwards;
+      }
+      .modal-card {
+        width: min(92%, 640px);
+        max-height: 92vh;
+        overflow: auto;
+        border-radius: 16px;
+        background: transparent; /* deja ver el panel interno */
+        box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+        animation: modal-pop-in 200ms ease-out forwards;
+        border: 2px solid rgba(255,255,255,0.6);
+
+      }
+      /* Estilo específico para la modal de borrar */
+      .modal-card.delete-card {
+        background: transparent !important;
+        border: 2px solid rgba(255,255,255,0.6);
+      }
+      .modal-card.delete-card > .mb-3 { color: #facc15 !important; }
+
+      .modal-mask.is-closing { animation: modal-fade-out 160ms ease-in forwards; }
+      .modal-mask.is-closing .modal-card { animation: modal-pop-out 160ms ease-in forwards; }
+
+      /* Hover verde para botón Aceptar dentro de la modal de borrar */
+      .modal-card.delete-card .btn[data-action="delete"]:hover {
+        background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+        color: #ffffff !important;
+        border-color: transparent !important;
+      }
+
+      /* Hover verde para botón Guardar dentro de la modal de crear reto */
+      .modal-card.create-card .btn.primary:hover {
+        background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+        color: #ffffff !important;
+        border-color: transparent !important;
+      }
+
+      @keyframes modal-fade-in { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes modal-fade-out { from { opacity: 1; } to { opacity: 0; } }
+      @keyframes modal-pop-in {
+        0% { opacity: 0; transform: translateY(10px) scale(0.98); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      @keyframes modal-pop-out {
+        0% { opacity: 1; transform: translateY(0) scale(1); }
+        100% { opacity: 0; transform: translateY(6px) scale(0.985); }
       }
     </style>
   </head>
@@ -198,32 +262,39 @@
 
         function BlockAccionesRetos(){
           const [showCreate, setShowCreate] = useState(false);
+          const [createClosing, setCreateClosing] = useState(false);
           const [showDelete, setShowDelete] = useState(false);
+          const [deleteClosing, setDeleteClosing] = useState(false);
           const [delId, setDelId] = useState('');
+
+          const openCreate = () => { setCreateClosing(false); setShowCreate(true); };
+          const closeCreate = () => { setCreateClosing(true); setTimeout(()=>{ setShowCreate(false); setCreateClosing(false); }, 180); };
+          const openDelete = () => { setDeleteClosing(false); setShowDelete(true); };
+          const closeDelete = () => { setDeleteClosing(true); setTimeout(()=>{ setShowDelete(false); setDeleteClosing(false); }, 180); };
           return (
             <div className="panel rounded-2xl border p-4 actions-panel">
               <h2 className="mb-3 text-lg font-semibold text-yellow-500">Acciones</h2>
               <div className="flex flex-wrap gap-2">
-                <button className="btn primary" onClick={()=>setShowCreate(true)}>Crear nuevo reto</button>
-                <button className="btn" data-action="delete" onClick={()=>setShowDelete(true)}>Borrar</button>
+                <button className="btn primary" onClick={openCreate}>Crear nuevo reto</button>
+                <button className="btn" data-action="delete" onClick={openDelete}>Borrar</button>
               </div>
 
               {showCreate && (
-                <div className="modal-mask">
-                  <div className="modal-card">
+                <div className={`modal-mask ${createClosing ? 'is-closing' : ''}`} onClick={(e)=>{ if(e.target===e.currentTarget) closeCreate(); }}>
+                  <div className="modal-card create-card">
                     <div className="mb-2 flex items-center justify-between">
-                      <div className="text-lg font-semibold">Crear nuevo reto</div>
-                      <button className="btn" data-action="close" onClick={()=>setShowCreate(false)}>Cerrar</button>
+                      <div className="text-lg font-bold text-yellow-500">  Crear nuevo reto</div>
+                      <button className="btn" data-action="close" onClick={closeCreate}>Cerrar</button>
                     </div>
-                    <BlockNuevoReto onSaved={()=>setShowCreate(false)} />
+                    <BlockNuevoReto onSaved={closeCreate} />
                   </div>
                 </div>
               )}
 
               {showDelete && (
-                <div className="modal-mask">
-                  <div className="modal-card" style={{width:'min(92%,560px)'}}>
-                    <div className="mb-3 text-lg font-semibold">Selecciona cuál de ellos quieres eliminar</div>
+                <div className={`modal-mask ${deleteClosing ? 'is-closing' : ''}`} onClick={(e)=>{ if(e.target===e.currentTarget) closeDelete(); }}>
+                  <div className="modal-card delete-card" style={{width:'min(92%,560px)'}}>
+                    <div className="mb-3 font-bold text-yellow-500">Selecciona cuál de ellos quieres eliminar</div>
                     {retos.length===0 ? (
                       <div className="text-sm">No hay retos para borrar.</div>
                     ) : (
@@ -235,8 +306,8 @@
                           ))}
                         </select>
                         <div className="flex items-center justify-end gap-2">
-                          <button className="btn" data-action="close" onClick={()=>setShowDelete(false)}>Cancelar</button>
-                          <button className="btn primary" data-action="delete" onClick={()=>{ if (delId) { setShowDelete(false); setDelId(''); deleteReto(delId);} }}>Aceptar</button>
+                          <button className="btn" data-action="close" onClick={closeDelete}>Cancelar</button>
+                          <button className="btn primary" data-action="delete" onClick={()=>{ if (delId) { closeDelete(); setDelId(''); deleteReto(delId);} }}>Aceptar</button>
                         </div>
                       </div>
                     )}
@@ -284,7 +355,7 @@
                 <button className="btn primary" onClick={()=>{ const m=new Date(year,month+1,1); setYear(m.getFullYear()); setMonth(m.getMonth()); }}>mes-siguiente</button>
               </div>
 
-              <div className="max-w-4xl mx-auto mb-1 rounded-2xl ring-1 ring-slate-200 px-3 py-1 bg-white/10">
+              <div className="max-w-4xl mx-auto mb-1 rounded-2xl ring-1 ring-slate-200 px-3 py-1 bg-transparent">
                 <div className="grid grid-cols-7 text-center text-sm font-semibold">
                   {['L','M','X','J','V','S','D'].map(w => <div key={w} className="py-0.5">{w}</div>)}
                 </div>
@@ -298,19 +369,19 @@
                   const status = activo?.progreso?.[dKey] || null;
                   const inside = inRange(dKey);
                   const retoColor = activo?.color || '#3b82f6';
-                  const styleBg = status==='ok'? okBg : (status==='fail'? failBg : (inside ? hexToRgba(retoColor, 0.18) : '#0b0b0b'));
+                  const styleBg = '#ffffff';
                   const ringCls = inside ? 'ring-1 ring-emerald-200' : '';
                   const borderCls = inside
                     ? (status==='ok' ? 'border-emerald-500' : status==='fail' ? 'border-rose-500' : '')
                     : 'border-slate-700';
                   return (
                     <div key={dKey}
-                      className={`relative flex aspect-square flex-col items-center justify-start gap-1 rounded-lg border p-2 hover:bg-slate-800 ${isWeekend? 'border-dashed' : 'border-solid'} ${borderCls} ${ringCls} ${inside? '' : 'opacity-50'}`}
+                      className={`relative flex aspect-square flex-col items-center justify-start gap-1 rounded-lg border p-2 hover:bg-white ${isWeekend? 'border-dashed' : 'border-solid'} ${borderCls} ${ringCls} ${inside? '' : 'opacity-50'}`}
                       style={{ background: styleBg, borderColor: (inside && !status) ? retoColor : undefined }}
                       onClick={()=> inside && toggleDay(dKey)}
                       title={inside? (status==='ok'?'Éxito':'') + (status==='fail'?'Fallo':'') : 'Fuera de rango'}
                     >
-                      <div className={`absolute right-2 top-2 font-bold text-base ${inside? 'text-white':'text-slate-400'}`}>{day}</div>
+                      <div className={`absolute right-2 top-2 font-bold text-base day-num ${inside? 'text-slate-900':'text-slate-400'}`}>{day}</div>
                       {status==='ok' && <div className="mt-6 text-2xl">✅</div>}
                       {status==='fail' && <div className="mt-6 text-2xl">❌</div>}
                       {!status && inside && <div className="mt-6 text-[11px] text-slate-300">Marca</div>}
@@ -344,4 +415,3 @@
     <script src="js/main.js" defer></script>
   </body>
   </html>
-

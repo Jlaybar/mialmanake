@@ -451,7 +451,7 @@
             }catch{}
           }, [retos, state.activoId]);
           return (
-            <div className="panel rounded-2xl border p-4 actions-panel">
+            <div className="panel rounded-2xl border p-4 actions-panel w-fit">
               <h2 className="mb-2 text-lg font-semibold text-blue-500">Elige tu Reto</h2>
               {retos.length===0 ? (
                 <div className="text-sm">AÃºn no hay retos. Crea el primero para empezar.</div>
@@ -579,9 +579,13 @@
                 <BlockAccionesRetos />
               </div>
               <div className="flex-1">
-                <div className="grid grid-cols-2 gap-4">
-                  <BlockTusRetos />
-                  <BlockTusLogros />
+                <div className="flex gap-4 items-start">
+                  <div className="flex-1">
+                    <BlockTusRetos />
+                  </div>
+                  <div className="shrink-0 w-fit">
+                    <BlockTusLogros />
+                  </div>
                 </div>
               </div>
             </div>

@@ -434,7 +434,7 @@
           useEffect(()=>{
             try{
               const panels = Array.from(document.querySelectorAll('.actions-panel'));
-              const root = panels.find(el => el.textContent && el.textContent.indexOf('Elige tu Reto') !== -1) || panels[0];
+              const root = panels.find(el => el.textContent && el.textContent.indexOf('Elige tu reto y comprueba tu avance') !== -1) || panels[0];
               if(!root) return;
               const btns = Array.from(root.querySelectorAll('button'));
               // Asegura tamaño igual a botones 'Nuevo' y 'Borrar'

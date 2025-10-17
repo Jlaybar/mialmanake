@@ -1,0 +1,1 @@
+﻿              btns.forEach((b,i)=>{ if(tips[i]!==undefined) b.title = tips[i]; });

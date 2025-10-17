@@ -1,10 +1,10 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MiAlmanake — Diario de Retos</title>
-    <meta name="description" content="Define objetivos, supera obstáculos y sigue tu progreso" />
+    <title>MiAlmanake â€” Diario de Retos</title>
+    <meta name="description" content="Define objetivos, supera obstÃ¡culos y sigue tu progreso" />
     <link rel="stylesheet" href="css/styles.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -58,7 +58,7 @@
         background: linear-gradient(135deg, #f59e0b, #d97706) !important;
         color: #ffffff !important;
       }
-      /* Hover verde solo para el botón 'Nuevo' del panel de acciones */
+      /* Hover verde solo para el botÃ³n 'Nuevo' del panel de acciones */
       body.wallpaper main.retos .panel.actions-panel .btn.primary[data-action="new"]:hover {
         background: linear-gradient(135deg, #22c55e, #16a34a) !important;
         color: #ffffff !important;
@@ -70,7 +70,7 @@
         border-color: transparent !important;
         color: #ffffff !important;
       }
-      /* Botón Borrar con base amarilla y texto negro */
+      /* BotÃ³n Borrar con base amarilla y texto negro */
       body.wallpaper .btn[data-action="delete"] {
         background: linear-gradient(135deg, #fde047, #f59e0b) !important;
         border-color: transparent !important;
@@ -119,14 +119,14 @@
       .modal-mask.is-closing { animation: modal-fade-out 160ms ease-in forwards; }
       .modal-mask.is-closing .modal-card { animation: modal-pop-out 160ms ease-in forwards; }
 
-      /* Hover verde para botón Aceptar dentro de la modal de borrar */
+      /* Hover verde para botÃ³n Aceptar dentro de la modal de borrar */
       .modal-card.delete-card .btn[data-action="delete"]:hover {
         background: linear-gradient(135deg, #22c55e, #16a34a) !important;
         color: #ffffff !important;
         border-color: transparent !important;
       }
 
-      /* Hover verde para botón Guardar dentro de la modal de crear reto */
+      /* Hover verde para botÃ³n Guardar dentro de la modal de crear reto */
       .modal-card.create-card .btn.primary:hover {
         background: linear-gradient(135deg, #22c55e, #16a34a) !important;
         color: #ffffff !important;
@@ -144,6 +144,11 @@
         100% { opacity: 0; transform: translateY(6px) scale(0.985); }
       }
     </style>
+    <style>
+      /* Overrides: fondos blancos para modales Crear y Borrar */
+      .modal-card.create-card { background: #ffffff !important; }
+      .modal-card.delete-card { background: #ffffff !important; }
+    </style>
   </head>
   <body class="wallpaper">
     <header class="site-header">
@@ -152,7 +157,7 @@
         <nav class="site-nav" aria-label="Principal">
           <ul>
             <li><a href="index.html#inicio">Inicio</a></li>
-            <li><a href="index.html#caracteristicas">Características</a></li>
+            <li><a href="index.html#caracteristicas">CaracterÃ­sticas</a></li>
             <li><a href="index.html#contacto">Contacto</a></li>
           </ul>
         </nav>
@@ -163,21 +168,21 @@
       <section class="hero">
         <div class="container">
           <h1>Diario de Retos</h1>
-          <p>Define objetivos, supera obstáculos y sigue tu progreso diario.</p>
+          <p>Define objetivos, supera obstÃ¡culos y sigue tu progreso diario.</p>
         </div>
       </section>
 
       <section>
         <div class="container">
           <div id="app"></div>
-          <noscript>Esta página requiere JavaScript para funcionar.</noscript>
+          <noscript>Esta pÃ¡gina requiere JavaScript para funcionar.</noscript>
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
       <div class="container">
-        <p>© <span id="year"></span> MiAlmanake. Todos los derechos reservados.</p>
+        <p>Â© <span id="year"></span> MiAlmanake. Todos los derechos reservados.</p>
       </div>
     </footer>
 
@@ -221,7 +226,7 @@
         // Seleccionar reto activo
         const setActivo = (id) => setState(s => ({ ...s, activoId: id }));
 
-        // Alternar estado de un día: null -> 'ok' -> 'fail' -> null
+        // Alternar estado de un dÃ­a: null -> 'ok' -> 'fail' -> null
         const toggleDay = (dKey) => {
           setState((s) => {
             const retosArr = Array.isArray(s.retos) ? [...s.retos] : [];
@@ -276,8 +281,8 @@
                   <input value={form.nombre} onChange={e=>setForm({...form, nombre:e.target.value})} type="text" className="w-full rounded border border-slate-300 px-2 py-1" placeholder="Ej. Leer 20 min diarios" />
                 </div>
                 <div>
-                  <label className="block text-sm">Descripción</label>
-                  <textarea value={form.descripcion} onChange={e=>setForm({...form, descripcion:e.target.value})} className="w-full rounded border border-slate-300 px-2 py-1" rows={3} placeholder="Qué, cuándo y cómo" />
+                  <label className="block text-sm">DescripciÃ³n</label>
+                  <textarea value={form.descripcion} onChange={e=>setForm({...form, descripcion:e.target.value})} className="w-full rounded border border-slate-300 px-2 py-1" rows={3} placeholder="QuÃ©, cuÃ¡ndo y cÃ³mo" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
@@ -331,15 +336,15 @@
               {showDelete && (
                 <div className={`modal-mask ${deleteClosing ? 'is-closing' : ''}`} onClick={(e)=>{ if(e.target===e.currentTarget) closeDelete(); }}>
                   <div className="modal-card delete-card" style={{width:'min(92%,560px)'}}>
-                    <div className="mb-3 font-bold text-yellow-500">Selecciona cuál de ellos quieres eliminar</div>
+                    <div className="mb-3 font-bold text-yellow-500">Selecciona cuÃ¡l de ellos quieres eliminar</div>
                     {retos.length===0 ? (
                       <div className="text-sm">No hay retos para borrar.</div>
                     ) : (
                       <div className="space-y-3">
                         <select className="w-full rounded border border-slate-300 px-2 py-2" value={delId} onChange={e=>setDelId(e.target.value)}>
-                          <option value="">— Selecciona un reto —</option>
+                          <option value="">â€” Selecciona un reto â€”</option>
                           {retos.map(r=> (
-                            <option key={r.id} value={r.id}>{r.nombre} ({r.inicio} → {r.fin})</option>
+                            <option key={r.id} value={r.id}>{r.nombre} ({r.inicio} â†’ {r.fin})</option>
                           ))}
                         </select>
                         <div className="flex items-center justify-end gap-2">
@@ -360,7 +365,7 @@
             <div className="panel rounded-2xl border p-4 actions-panel">
               <h2 className="mb-2 text-lg font-semibold text-blue-500">Elige tu Reto</h2>
               {retos.length===0 ? (
-                <div className="text-sm">Aún no hay retos. Crea el primero para empezar.</div>
+                <div className="text-sm">AÃºn no hay retos. Crea el primero para empezar.</div>
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {retos.map(r=>{
@@ -369,7 +374,7 @@
                     const fg = active ? getContrastText(r.color||'#3b82f6') : '#111827';
                     const border = active ? 'transparent' : (r.color||'#3b82f6');
                     return (
-                      <button key={r.id} onClick={()=>setActivo(r.id)} className="px-3 py-1 rounded-full border text-sm" style={{ background:bg, color:fg, borderColor:border }} title={`${r.nombre} (${r.inicio} → ${r.fin})`}>
+                      <button key={r.id} onClick={()=>setActivo(r.id)} className="px-3 py-1 rounded-full border text-sm" style={{ background:bg, color:fg, borderColor:border }} title={`${r.nombre} (${r.inicio} â†’ ${r.fin})`}>
                         {r.nombre}
                       </button>
                     );
@@ -416,11 +421,11 @@
                       className={`day relative flex aspect-square flex-col items-center justify-start gap-1 rounded-lg border p-2 hover:bg-white ${isWeekend? 'border-dashed' : 'border-solid'} ${borderCls} ${ringCls} ${inside? '' : 'opacity-50'} ${status==='ok' ? 'status-ok' : ''} ${status==='fail' ? 'status-fail' : ''}`}
                       style={{ background: styleBg, borderColor: (inside && !status) ? retoColor : undefined }}
                       onClick={()=> inside && toggleDay(dKey)}
-                      title={inside? (status==='ok'?'Éxito':'') + (status==='fail'?'Fallo':'') : 'Fuera de rango'}
+                      title={inside? (status==='ok'?'Ã‰xito':'') + (status==='fail'?'Fallo':'') : 'Fuera de rango'}
                     >
                       <div className={`absolute right-2 top-2 font-bold text-base day-num ${inside? 'text-slate-900':'text-slate-400'}`}>{day}</div>
-                      {status==='ok' && <div className="mt-6 text-2xl">✅</div>}
-                      {status==='fail' && <div className="mt-6 text-2xl">❌</div>}
+                      {status==='ok' && <div className="mt-6 text-2xl">âœ…</div>}
+                      {status==='fail' && <div className="mt-6 text-2xl">âŒ</div>}
                       {!status && inside && <div className="mt-6 text-[11px] text-slate-300">Marca</div>}
                     </div>
                   );

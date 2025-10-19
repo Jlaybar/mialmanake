@@ -302,10 +302,10 @@
         useEffect(()=>{ if(!activo) return; const start = parseKey(activo.inicio); if(start){ setYear(start.getFullYear()); setMonth(start.getMonth()); } }, [state.activoId]);
 
         const addReto = (form) => {
-          const nombre=(form.nombre||'').trim(); const descripcion=(form.descripcion||'').trim(); const inicio=form.inicio; const fin=form.fin;
+          const nombre=(form.nombre||'').trim(); const descripcion=(form.descripcion||'').trim(); const inicio=form.inicio; const fin=form.fin; const premio=(form.premio||'').trim();
           if(!nombre || !inicio || !fin || fin<inicio) return;
           const color = pickRetoColor(retos);
-          const ret = { id: makeId(), nombre, descripcion, inicio, fin, color, progreso: {} };
+          const ret = { id: makeId(), nombre, descripcion, inicio, fin, premio, color, progreso: {} };
           setState(s=>({ retos:[...retos, ret], activoId: ret.id }));
           return ret;
         };
@@ -317,28 +317,32 @@
         const leadingEmpty = (firstWeekday + 6) % 7;
 
         function BlockNuevoReto({ onSaved }){
-          const [form, setForm] = useState({ nombre:'', descripcion:'', inicio:'', fin:'' });
+          const [form, setForm] = useState({ nombre:'', descripcion:'', inicio:'', fin:'', premio:'' });
           return (
             <div className="panel rounded-2xl border p-4 actions-panel" data-panel="tus-retos">
-              <h2 className="mb-2 text-lg font-semibold">Nuevo Reto</h2>
+              <h2 className="mb-2 text-lg font-semibold">Mi Nuevo Reto</h2>
               <div className="space-y-2">
                 <div>
-                  <label className="block text-sm">Nombre</label>
+                  <label className="block text-sm">Nombre CORTO del reto</label>
                   <input value={form.nombre} onChange={e=>setForm({...form, nombre:e.target.value})} type="text" className="w-full rounded border border-slate-300 px-2 py-1" placeholder="Ej. Leer 20 min diarios" />
                 </div>
                 <div>
-                  <label className="block text-sm">DescripciÃ³n</label>
+                  <label className="block text-sm">Descripción con el DETALLE del reto</label>
                   <textarea value={form.descripcion} onChange={e=>setForm({...form, descripcion:e.target.value})} className="w-full rounded border border-slate-300 px-2 py-1" rows={3} placeholder="QuÃ©, cuÃ¡ndo y cÃ³mo" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-sm">Inicio</label>
+                    <label className="block text-sm">Inicio del reto</label>
                     <input value={form.inicio} onChange={e=>setForm({...form, inicio:e.target.value})} type="date" className="w-full rounded border border-slate-300 px-2 py-1" />
                   </div>
                   <div>
-                    <label className="block text-sm">Fin</label>
+                    <label className="block text-sm">Fin del reto</label>
                     <input value={form.fin} onChange={e=>setForm({...form, fin:e.target.value})} type="date" className="w-full rounded border border-slate-300 px-2 py-1" />
                   </div>
+                </div>
+                <div>
+                  <label className="block text-sm">Premio del reto</label>
+                  <input value={form.premio} onChange={e=>setForm({...form, premio:e.target.value})} type="text" className="w-full rounded border border-slate-300 px-2 py-1" placeholder="Ej. Ir al cine, comprar un libro..." />
                 </div>
                 <div className="flex items-center justify-end">
                   <button type="button" className="btn primary" onClick={()=>{ const created = addReto(form); if(created && onSaved) onSaved(created); }}>Guardar</button>

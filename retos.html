@@ -438,25 +438,30 @@
               if(!root) return;
               const btns = Array.from(root.querySelectorAll('button'));
               // Asegura tamaño igual a botones 'Nuevo' y 'Borrar'
+<<<<<<< HEAD
               btns.forEach(b => {
                 try {
                   b.classList.add('btn');
                   b.classList.remove('px-3','py-1','rounded-full','border','text-sm');
                 } catch {}
               });
+=======
+              btns.forEach(b => { try { b.classList.add('btn'); b.classList.remove('px-3','py-1','rounded-full','border','text-sm'); } catch {} });
+>>>>>>> dcf40544d16b3e5bf3533ba2ed1405ab31ec60f7
               btns.forEach(b => b.removeAttribute('title'));
+              btns.forEach(b => { try { b.classList.add('border-2','hover:border-emerald-500'); } catch {} });
               const tips = (retos||[]).map(r=>{
                 const s = parseKey(r.inicio), e = parseKey(r.fin);
                 const t = (s && e) ? (Math.floor((e - s)/86400000) + 1) : 0;
                 const ok = Object.entries(r.progreso||{}).filter(([k,v])=>v==='ok' && withinRange(k, r.inicio, r.fin)).length;
                 const pct = t>0 ? Math.round(ok*100/t) : 0;
-                return `${(r.descripcion||'').trim()}\n% exito: ${pct}%`;
+                return `${(r.descripcion||'').trim()}\n${pct}% de exito`;
               });
               btns.forEach((b,i)=>{ if(tips[i]!==undefined) b.title = tips[i]; });
             }catch{}
           }, [retos, state.activoId]);
           return (
-            <div className="panel rounded-2xl border p-4 actions-panel">
+            <div className="panel rounded-2xl border p-4 actions-panel w-fit">
               <h2 className="mb-2 text-lg font-semibold text-blue-500">Elige tu Reto</h2>
               {retos.length===0 ? (
                 <div className="text-sm">AÃºn no hay retos. Crea el primero para empezar.</div>
@@ -475,6 +480,49 @@
                   })}
                 </div>
               )}
+            </div>
+          );
+        }
+
+        function BlockTusLogros(){
+          // Resumen de cada reto y conteo de medallas
+          const items = (retos||[]).map(r=>{
+            const s = parseKey(r.inicio), e = parseKey(r.fin);
+            const t = (s && e) ? (Math.floor((e - s) / 86400000) + 1) : 0;
+            const ok = Object.entries(r.progreso || {}).filter(([k,v]) => v==='ok' && withinRange(k, r.inicio, r.fin)).length;
+            const pct = t>0 ? Math.round(ok*100/t) : 0;
+            return { id:r.id, nombre:r.nombre, color:r.color, ok, t, pct };
+          });
+          const medals = items.reduce((acc,it)=>{
+            if (it.pct >= 100) acc.oro++;
+            else if (it.pct >= 75) acc.plata++;
+            else if (it.pct >= 50) acc.bronce++;
+            return acc;
+          }, { oro:0, plata:0, bronce:0 });
+          const oroList = items.filter(it => it.pct >= 100).map(it => it.nombre);
+          const plataList = items.filter(it => it.pct >= 75 && it.pct < 100).map(it => it.nombre);
+          const bronceList = items.filter(it => it.pct >= 50 && it.pct < 75).map(it => it.nombre);
+          const joinLines = (arr) => (arr && arr.length ? arr.join('\n') : 'Sin logros');
+          return (
+            <div className="panel rounded-2xl border p-4 actions-panel">
+              <h2 className="mb-2 text-lg font-semibold text-emerald-500">Tus logros</h2>
+              <div className="flex items-center gap-2">
+                <div className="btn flex items-center gap-2 bg-white text-slate-800 border-2 border-slate-200 hover:border-emerald-500" title={joinLines(oroList)}>
+                  <span>🥇</span>
+                  <span>Oro</span>
+                  <span className="font-semibold">{medals.oro}</span>
+                </div>
+                <div className="btn flex items-center gap-2 bg-white text-slate-800 border-2 border-slate-200 hover:border-emerald-500" title={joinLines(plataList)}>
+                  <span>🥈</span>
+                  <span>Plata</span>
+                  <span className="font-semibold">{medals.plata}</span>
+                </div>
+                <div className="btn flex items-center gap-2 bg-white text-slate-800 border-2 border-slate-200 hover:border-emerald-500" title={joinLines(bronceList)}>
+                  <span>🥉</span>
+                  <span>Bronce</span>
+                  <span className="font-semibold">{medals.bronce}</span>
+                </div>
+              </div>
             </div>
           );
         }
@@ -540,12 +588,19 @@
 
         return (
           <div className="space-y-4">
-            <div className="grid grid-cols-4 gap-4 items-start">
-              <div className="col-span-1">
+            <div className="flex gap-4 items-start">
+              <div className="w-fit shrink-0">
                 <BlockAccionesRetos />
               </div>
-              <div className="col-span-3">
-                <BlockTusRetos />
+              <div className="flex-1">
+                <div className="flex gap-4 items-start">
+                  <div className="flex-1">
+                    <BlockTusRetos />
+                  </div>
+                  <div className="shrink-0 w-fit">
+                    <BlockTusLogros />
+                  </div>
+                </div>
               </div>
             </div>
             <BlockCalendar />

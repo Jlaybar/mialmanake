@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="es">
   <head>
     <meta charset="utf-8" />
@@ -37,7 +37,7 @@
       }
       /* Cabecera en negrita */
       body.wallpaper .site-nav a { font-weight: 700 !important; }
-      /* Hover del menú principal */
+      /* Hover del menÃº principal */
       body.wallpaper .site-nav a:hover {
         color: #1c007a !important;
       }
@@ -48,27 +48,28 @@
 
       /* Botones "Entrar" a amarillo con degradado */
       body.wallpaper .btn.primary {
-        background: linear-gradient(135deg, #fde047, #f59e0b) !important; /* amarillo → ámbar */
+        background: linear-gradient(135deg, #fde047, #f59e0b) !important; /* amarillo â†’ Ã¡mbar */
         border-color: transparent !important;
         color: #111827 !important; /* texto oscuro para contraste */
       }
-      /* En tarjetas (Entrar): cambiar a naranja al pasar el ratón */
+      /* En tarjetas (Entrar): cambiar a naranja al pasar el ratÃ³n */
       body.wallpaper .features .grid-3 a.btn.primary:hover {
-        background: linear-gradient(135deg, #f59e0b, #d97706) !important; /* ámbar → naranja fuerte */
-        color: #ffffff !important; /* texto blanco al pasar el ratón */
+        background: linear-gradient(135deg, #f59e0b, #d97706) !important; /* Ã¡mbar â†’ naranja fuerte */
+        color: #ffffff !important; /* texto blanco al pasar el ratÃ³n */
       }
-      /* "Ver más" (hero) con el mismo hover que Entrar */
-      body.wallpaper .hero .actions a.btn.primary:hover {
-        background: linear-gradient(135deg, #f59e0b, #d97706) !important;
-        color: #ffffff !important;
+      /* "Ver mÃ¡s" (hero) con el mismo hover que Entrar */
+      /* Borde amarillo en los tres bloques de características */
+      body.wallpaper .features .grid-3 article {
+        border: 2px solid #fde047 !important; /* amarillo */
       }
-      /* Botón Contacto en el héroe con fondo azul (igual a tarjetas) */
+      body.wallpaper .hero .actions a.btn.primary:hover {`r`n        background: linear-gradient(135deg, #f59e0b, #d97706) !important;`r`n        color: #ffffff !important;`r`n      }
+      /* BotÃ³n Contacto en el hÃ©roe con fondo azul (igual a tarjetas) */
       body.wallpaper .hero .actions a.btn[href="#contacto"] {
         background: linear-gradient(135deg, #40a9e8, #007fcc) !important;
         border-color: transparent !important;
         color: #ffffff !important;
       }
-      /* Hover del botón Contacto: naranja más oscuro, texto blanco */
+      /* Hover del botÃ³n Contacto: naranja mÃ¡s oscuro, texto blanco */
       body.wallpaper .hero .actions a.btn[href="#contacto"]:hover {
         background: linear-gradient(135deg, #d97706, #b45309) !important;
         color: #ffffff !important;
@@ -82,7 +83,7 @@
         <nav class="site-nav" aria-label="Principal">
           <ul>
             <li><a href="#inicio">Inicio</a></li>
-            <li><a href="info.html">Características</a></li>
+            <li><a href="info.html">CaracterÃ­sticas</a></li>
             <li><a href="info.html#contacto">Contacto</a></li>
           </ul>
         </nav>
@@ -93,9 +94,9 @@
       <section class="hero">
         <div class="container">
           <h1>Bienvenido a MiAlmanake</h1>
-          <p>Base ligera para comenzar tu página web.</p>
+          <p>Base ligera para comenzar tu pÃ¡gina web.</p>
           <div class="actions">
-            <a class="btn primary" href="#caracteristicas">Ver más</a>
+            <a class="btn primary" href="#caracteristicas">Ver mÃ¡s</a>
             <a class="btn" href="#contacto">Contacto</a>
           </div>
         </div>
@@ -110,12 +111,12 @@
           </article>
           <article>
             <h2>Diario de RETOS</h2>
-            <p>Define objetivos, supera obstáculos y sigue tu progreso diario.</p>
+            <p>Define objetivos, supera obstÃ¡culos y sigue tu progreso diario.</p>
             <a class="btn primary" href="retos.html">Entrar</a>
           </article>
           <article>
             <h2>Resumen de Emociones</h2>
-            <p>Comprueba aqui tu evolución emocional.</p>
+            <p>Comprueba aqui tu evoluciÃ³n emocional.</p>
             <a class="btn primary" href="graficas.html">Entrar</a>
           </article>
         </div>
@@ -125,10 +126,12 @@
 
     <footer class="site-footer" id="contacto">
       <div class="container">
-        <p>© <span id="year"></span> MiAlmanake. Todos los derechos reservados.</p>
+        <p>Â© <span id="year"></span> MiAlmanake. Todos los derechos reservados.</p>
       </div>
     </footer>
 
     <script src="js/main.js" defer></script>
   </body>
   </html>
+
+

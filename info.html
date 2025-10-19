@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MiAlmanake — Información</title>
+    <meta name="description" content="Documentación y guía de uso de MiAlmanake" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.5.1/github-markdown.min.css">
+    <style>
+      body.wallpaper {
+        background: url('assets/images/origami_01.png') center center / cover fixed no-repeat !important;
+        color: #ffffff;
+      }
+      body.wallpaper .site-header,
+      body.wallpaper .hero,
+      body.wallpaper .site-footer { background: transparent !important; border-color: rgba(255,255,255,0.2) !important; }
+      body.wallpaper .site-header .brand,
+      body.wallpaper .site-nav a,
+      body.wallpaper .hero h1,
+      body.wallpaper .hero p,
+      body.wallpaper .site-footer { color: #ffffff !important; }
+
+      .markdown-wrap { padding: 24px 0 56px; }
+      .markdown-body {
+        width: min(900px, 94%);
+        margin: 0 auto;
+        background: rgba(255,255,255,0.92);
+        color: #111827;
+        border-radius: 14px;
+        border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        padding: 28px;
+      }
+      .markdown-body a { color: #1d4ed8; }
+      .markdown-body code { background: #f3f4f6; padding: .1em .3em; border-radius: 4px; }
+      .markdown-body pre code { background: transparent; }
+    </style>
+  </head>
+  <body class="wallpaper">
+    <header class="site-header">
+      <div class="container">
+        <a class="brand" href="index.html">MiAlmanake</a>
+        <nav class="site-nav" aria-label="Principal">
+          <ul>
+            <li><a href="index.html#inicio">Inicio</a></li>
+            <li><a href="info.html">Características</a></li>
+            <li><a href="emociones.html">Emociones</a></li>
+            <li><a href="retos.html">Retos</a></li>
+            <li><a href="graficas.html">Gráficas</a></li>
+            <li><a href="info.html#contacto">Contacto</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="section">
+      <section class="hero">
+        <div class="container">
+          <h1>Información y Guía</h1>
+          <p>Todo lo que necesitas para usar MiAlmanake.</p>
+        </div>
+      </section>
+
+      <section class="markdown-wrap">
+        <article id="markdown" class="markdown-body">
+          <p>Cargando documentación…</p>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>© <span id="year"></span> MiAlmanake. Todos los derechos reservados.</p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const yearEl = document.getElementById('year');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+      });
+
+      (async function loadMarkdown() {
+        try {
+          const res = await fetch('info.md', { cache: 'no-cache' });
+          if (!res.ok) throw new Error('No se pudo cargar info.md');
+          const md = await res.text();
+          const html = marked.parse(md, { mangle: false, headerIds: true });
+          const el = document.getElementById('markdown');
+          if (el) {
+            el.innerHTML = html;
+            if (location.hash) {
+              const id = decodeURIComponent(location.hash.slice(1));
+              const target = document.getElementById(id) || document.querySelector(`[id="${id}"]`);
+              if (target && typeof target.scrollIntoView === 'function') {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }
+          }
+        } catch (e) {
+          const el = document.getElementById('markdown');
+          if (el) el.innerHTML = '<p>No se pudo cargar la documentación. Revisa que <code>info.md</code> exista.</p>';
+          console.warn('[info] Error cargando Markdown', e);
+        }
+      })();
+    </script>
+  </body>
+  </html>

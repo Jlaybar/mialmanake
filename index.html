@@ -3,6 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      try {
+        if (localStorage.getItem('mialmanake.unlocked') !== '1') {
+          location.replace('password.html');
+        }
+      } catch (e) {
+        location.replace('password.html');
+      }
+    </script>
     <title>MiALMAnake</title>
     <meta name="description" content="Sitio web inicial" />
     <link rel="stylesheet" href="css/styles.css" />
@@ -54,10 +63,9 @@
       body.wallpaper .site-nav a:hover {
         color: #1c007a !important;
       }
-      /* Hover amarillo para Inicio/Características/Contacto */
-      .site-nav a[href="#inicio"]:hover,
+      /* Hover naranja para Características/Contacto */
       .site-nav a[href="info.html"]:hover,
-      .site-nav a[href="info.html#contacto"]:hover { color: #fde047 !important; }
+      .site-nav a[href="info.html#contacto"]:hover { color: #f59e0b !important; }
       /* Hover de la marca (MiAlmanake) */
       body.wallpaper .site-header .brand:hover {
         color: #1c007a !important;
@@ -99,7 +107,6 @@
         <a class="brand" href="#"><span class="marca" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span></a>
         <nav class="site-nav" aria-label="Principal">
           <ul>
-            <li><a href="#inicio">Inicio</a></li>
             <li><a href="info.html">Caracterí­sticas</a></li>
             <li><a href="info.html#contacto">Contacto</a></li>
           </ul>

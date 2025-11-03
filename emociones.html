@@ -13,11 +13,19 @@
       .site-nav a { color: #000 !important; font-weight: 700 !important; }
       .hero h1, .hero p { color: #000 !important; }
     </style>
+    <style>
+      /* Marca estilizada MiALMAnake */
+      .marca { display: inline-flex; gap: 0; font-weight: 800; line-height: 1.1; letter-spacing: 0.5px; }
+      .marca.mini { font-weight: 700; font-size: 1em; }
+      .marca .mi { color: #000000 !important; }
+      .marca .alma { color: #f59e0b !important; background: #fafafa; padding: 0.05em 0.15em; border-radius: 0.15em; }
+      .marca .nake { color: #000000 !important; }
+    </style>
   </head>
   <body>
     <header class="site-header">
       <div class="container">
-        <a class="brand" href="index.html">MiAlmanake</a>
+        <a class="brand" href="index.html"><span class="marca" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span></a>
         <nav class="site-nav" aria-label="Principal">
           <ul>
             <li><a href="index.html#inicio">Inicio</a></li>
@@ -51,6 +59,19 @@
     </footer>
 
     <!-- React + ReactDOM (UMD) -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        try {
+          const p = document.querySelector('.site-footer p');
+          if (p) {
+            const y = document.getElementById('year');
+            const yearText = y ? y.textContent : '';
+            p.innerHTML = '&copy; <span id="year">' + yearText + '</span> <span class="marca mini" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span>. Todos los derechos reservados.';
+          }
+          document.title = document.title.replace('MiAlmanake', 'MiALMAnake');
+        } catch {}
+      });
+    </script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <!-- Babel para interpretar JSX en el navegador (solo para esta página) -->

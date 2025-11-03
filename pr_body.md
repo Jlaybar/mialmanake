@@ -19,7 +19,7 @@
   - Hover dinámico en cabecera según el color del mes; enlaces en negrita.
 
 - index.html
-  - Fondo de pantalla `assets/images/origami_01.png`.
+  - Fondo de pantalla `assets/images/merkaba_01.png`.
   - Tarjetas con degradado azul (#40a9e8 → #007fcc).
   - Botones “Entrar” en amarillo (hover naranja, texto blanco); “Contacto” azul (hover naranja oscuro).
   - Menú en negrita; hover a #1c007a/amarillo donde aplica.

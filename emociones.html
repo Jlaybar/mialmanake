@@ -20,6 +20,8 @@
       .marca .mi { color: #000000 !important; }
       .marca .alma { color: #f59e0b !important; background: #fafafa; padding: 0.05em 0.15em; border-radius: 0.15em; }
       .marca .nake { color: #000000 !important; }
+      /* Pie de página en negro */
+      .site-footer { color: #000000 !important; }
     </style>
   </head>
   <body>
@@ -63,11 +65,8 @@
       document.addEventListener('DOMContentLoaded', () => {
         try {
           const p = document.querySelector('.site-footer p');
-          if (p) {
-            const y = document.getElementById('year');
-            const yearText = y ? y.textContent : '';
-            p.innerHTML = '&copy; <span id="year">' + yearText + '</span> <span class="marca mini" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span>. Todos los derechos reservados.';
-          }
+          const marcaHtml = '<span class="marca mini" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span>';
+          if (p) { p.innerHTML = '&copy; 2025 ' + marcaHtml + ' los derechos reservados.'; }
           document.title = document.title.replace('MiAlmanake', 'MiALMAnake');
         } catch {}
       });
@@ -565,7 +564,7 @@
             }
           }
 
-          if (!key) { clearBg(); return; }
+          clearBg(); return;
           const src = `assets/images/fondo_${key}.png`;
           const img = new Image();
           img.onload = () => {

@@ -18,8 +18,8 @@
         background: #f8fafc !important; /* leve gris para feedback */
         color: #111827 !important;
       }
-      /* Fondo fijo con imagen gris */
-      body { background: url('assets/images/fondo_gris.png') center center / cover fixed no-repeat !important; }
+      /* Fondo liso blanco (sin imagen) */
+      body { background: #ffffff !important; }
       /* Cabecera en negro */
       .site-header .brand { color: #000000 !important; }
       .site-header .brand:hover { color: #fde047 !important; }
@@ -38,6 +38,11 @@
       .marca .mi { color: #000000 !important; }
       .marca .alma { color: #f59e0b !important; background: #fafafa; padding: 0.05em 0.15em; border-radius: 0.15em; }
       .marca .nake { color: #000000 !important; }
+      /* Hero en negro */
+      #graficas .hero h1,
+      #graficas .hero p { color: #000000 !important; }
+      /* Pie de página en negro */
+      .site-footer { color: #000000 !important; }
     </style>
   </head>
   <body>
@@ -82,11 +87,8 @@
       document.addEventListener('DOMContentLoaded', () => {
         try {
           const p = document.querySelector('.site-footer p');
-          if (p) {
-            const y = document.getElementById('year');
-            const yearText = y ? y.textContent : '';
-            p.innerHTML = '&copy; <span id="year">' + yearText + '</span> <span class="marca mini" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span>. Todos los derechos reservados.';
-          }
+          const marcaHtml = '<span class="marca mini" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span>';
+          if (p) { p.innerHTML = '&copy; 2025 ' + marcaHtml + ' los derechos reservados.'; }
           document.title = document.title.replace('MiAlmanake', 'MiALMAnake');
         } catch {}
       });

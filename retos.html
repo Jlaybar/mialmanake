@@ -24,6 +24,11 @@
       body.wallpaper .site-footer {
         color: #ffffff !important;
       }
+      /* Hero (título y descripción) en negro en Retos */
+      body.wallpaper main.retos .hero h1,
+      body.wallpaper main.retos .hero p { color: #000000 !important; }
+      /* Pie de página en negro */
+      body.wallpaper .site-footer { color: #000000 !important; }
       /* Cabecera en negro */
       body.wallpaper .site-header .brand,
       body.wallpaper .site-nav a { color: #000000 !important; }
@@ -56,6 +61,8 @@
         border-color: rgba(255,255,255,0.2) !important;
       }
       body.wallpaper main.retos .panel.calendar-panel * { color: #ffffff !important; }
+      /* Nombre del mes en negro dentro del calendario */
+      body.wallpaper main.retos .panel.calendar-panel .text-lg.font-semibold { color: #000000 !important; }
       body.wallpaper main.retos .panel.calendar-panel .day-num { color: #111827 !important; }
       body.wallpaper main.retos .panel.calendar-panel .day.status-ok .day-num,
       body.wallpaper main.retos .panel.calendar-panel .day.status-fail .day-num { color: #ffffff !important; }
@@ -279,8 +286,7 @@
             if (footerP) {
               const y = document.getElementById('year');
               const yearText = y ? y.textContent : '';
-              footerP.innerHTML = '&copy; <span id="year">' + yearText + '</span> MiAlmanake. Todos los derechos reservados.';
-              footerP.innerHTML = footerP.innerHTML.replace('MiAlmanake', marcaHtml);
+              footerP.innerHTML = '&copy; 2025 ' + marcaHtml + ' los derechos reservados.';
             }
           } catch {}
         }, []);

@@ -31,6 +31,8 @@
       body.wallpaper .site-footer {
         color: #ffffff !important;
       }
+      /* Pie de página en negro */
+      body.wallpaper .site-footer { color: #000000 !important; }
       /* Hero (Bienvenido / Base ligera) en negro */
       body.wallpaper .hero h1,
       body.wallpaper .hero p { color: #000000 !important; }
@@ -46,12 +48,16 @@
       /* Cabecera en negro */
       body.wallpaper .site-header .brand,
       body.wallpaper .site-nav a { color: #000000 !important; }
-      /* Cabecera en negrita */
-      body.wallpaper .site-nav a { font-weight: 700 !important; }
+      /* Cabecera sin negrita */
+      body.wallpaper .site-nav a { font-weight: normal !important; }
       /* Hover del menÃº principal */
       body.wallpaper .site-nav a:hover {
         color: #1c007a !important;
       }
+      /* Hover amarillo para Inicio/Características/Contacto */
+      .site-nav a[href="#inicio"]:hover,
+      .site-nav a[href="info.html"]:hover,
+      .site-nav a[href="info.html#contacto"]:hover { color: #fde047 !important; }
       /* Hover de la marca (MiAlmanake) */
       body.wallpaper .site-header .brand:hover {
         color: #1c007a !important;
@@ -146,11 +152,8 @@
       document.addEventListener('DOMContentLoaded', () => {
         try {
           const p = document.querySelector('.site-footer p');
-          if (p) {
-            const y = document.getElementById('year');
-            const yearText = y ? y.textContent : '';
-            p.innerHTML = '&copy; <span id="year">' + yearText + '</span> <span class="marca mini" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span>. Todos los derechos reservados.';
-          }
+          const marcaHtml = '<span class="marca mini" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span>';
+          if (p) { p.innerHTML = '&copy; 2025 ' + marcaHtml + ' los derechos reservados.'; }
           if (document.title === 'Mi Sitio Web') document.title = 'MiALMAnake';
           document.title = document.title.replace('MiAlmanake', 'MiALMAnake');
         } catch {}

@@ -18,12 +18,12 @@
         background: #f8fafc !important; /* leve gris para feedback */
         color: #111827 !important;
       }
-      /* Fondo fijo con imagen gris */
-      body { background: url('assets/images/fondo_gris.png') center center / cover fixed no-repeat !important; }
-      /* Cabecera en blanco para fondo oscuro */
-      .site-header .brand { color: #ffffff !important; }
+      /* Fondo liso blanco (sin imagen) */
+      body { background: #ffffff !important; }
+      /* Cabecera en negro */
+      .site-header .brand { color: #000000 !important; }
       .site-header .brand:hover { color: #fde047 !important; }
-      .site-nav a { color: #ffffff !important; font-weight: 700 !important; }
+      .site-nav a { color: #000000 !important; font-weight: 700 !important; }
       .site-nav a:hover { color: #1c007a !important; }
       /* Hover amarillo solo para Inicio, Características y Contacto */
       .site-nav a[href="index.html#inicio"]:hover,
@@ -32,12 +32,23 @@
       /* Mantener tipografía del héroe según tema base */
       /* Oculta enlace sobrante para igualar navegación a emociones.html */
       .site-nav a[href="#"] { display: none !important; }
+      /* Marca estilizada MiALMAnake */
+      .marca { display: inline-flex; gap: 0; font-weight: 800; line-height: 1.1; letter-spacing: 0.5px; }
+      .marca.mini { font-weight: 700; font-size: 1em; }
+      .marca .mi { color: #000000 !important; }
+      .marca .alma { color: #f59e0b !important; background: #fafafa; padding: 0.05em 0.15em; border-radius: 0.15em; }
+      .marca .nake { color: #000000 !important; }
+      /* Hero en negro */
+      #graficas .hero h1,
+      #graficas .hero p { color: #000000 !important; }
+      /* Pie de página en negro */
+      .site-footer { color: #000000 !important; }
     </style>
   </head>
   <body>
     <header class="site-header">
       <div class="container">
-        <a class="brand" href="index.html">MiAlmanake</a>
+        <a class="brand" href="index.html"><span class="marca" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span></a>
         <nav class="site-nav" aria-label="Principal">
           <ul>
             <li><a href="index.html#inicio">Inicio</a></li>
@@ -72,6 +83,16 @@
     </footer>
 
     <!-- React + ReactDOM (UMD) -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        try {
+          const p = document.querySelector('.site-footer p');
+          const marcaHtml = '<span class="marca mini" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span>';
+          if (p) { p.innerHTML = '&copy; 2025 ' + marcaHtml + ' los derechos reservados.'; }
+          document.title = document.title.replace('MiAlmanake', 'MiALMAnake');
+        } catch {}
+      });
+    </script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <!-- Babel para JSX en navegador (simple para esta página) -->

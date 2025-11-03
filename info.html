@@ -9,17 +9,26 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.5.1/github-markdown.min.css">
     <style>
       body.wallpaper {
-        background: url('assets/images/origami_01.png') center center / cover fixed no-repeat !important;
+        background: url('assets/images/merkaba_01.png') center center / auto fixed no-repeat !important;
         color: #ffffff;
       }
       body.wallpaper .site-header,
       body.wallpaper .hero,
       body.wallpaper .site-footer { background: transparent !important; border-color: rgba(255,255,255,0.2) !important; }
-      body.wallpaper .site-header .brand,
-      body.wallpaper .site-nav a,
       body.wallpaper .hero h1,
       body.wallpaper .hero p,
       body.wallpaper .site-footer { color: #ffffff !important; }
+      /* Pie de página en negro */
+      body.wallpaper .site-footer { color: #000000 !important; }
+      /* Marca estilizada MiALMAnake */
+      .marca { display: inline-flex; gap: 0; font-weight: 800; line-height: 1.1; letter-spacing: 0.5px; }
+      .marca.mini { font-weight: 700; font-size: 1em; }
+      .marca .mi { color: #000000 !important; }
+      .marca .alma { color: #f59e0b !important; background: #fafafa; padding: 0.05em 0.15em; border-radius: 0.15em; }
+      .marca .nake { color: #000000 !important; }
+      /* Cabecera en negro */
+      body.wallpaper .site-header .brand,
+      body.wallpaper .site-nav a { color: #000000 !important; }
 
       .markdown-wrap { padding: 24px 0 56px; }
       .markdown-body {
@@ -40,7 +49,7 @@
   <body class="wallpaper">
     <header class="site-header">
       <div class="container">
-        <a class="brand" href="index.html">MiAlmanake</a>
+        <a class="brand" href="index.html"><span class="marca" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span></a>
         <nav class="site-nav" aria-label="Principal">
           <ul>
             <li><a href="index.html#inicio">Inicio</a></li>
@@ -58,7 +67,7 @@
       <section class="hero">
         <div class="container">
           <h1>Información y Guía</h1>
-          <p>Todo lo que necesitas para usar MiAlmanake.</p>
+          <p>Todo lo que necesitas para usar <span class="marca mini" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span>.</p>
         </div>
       </section>
 
@@ -76,6 +85,16 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        try {
+          const p = document.querySelector('.site-footer p');
+          const marcaHtml = '<span class="marca mini" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span>';
+          if (p) { p.innerHTML = '&copy; 2025 ' + marcaHtml + ' los derechos reservados.'; }
+          document.title = document.title.replace('MiAlmanake', 'MiALMAnake');
+        } catch {}
+      });
+    </script>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         const yearEl = document.getElementById('year');

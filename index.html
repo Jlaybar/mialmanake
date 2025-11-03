@@ -3,13 +3,22 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Mi Sitio Web</title>
+    <script>
+      try {
+        if (localStorage.getItem('mialmanake.unlocked') !== '1') {
+          location.replace('password.html');
+        }
+      } catch (e) {
+        location.replace('password.html');
+      }
+    </script>
+    <title>MiALMAnake</title>
     <meta name="description" content="Sitio web inicial" />
     <link rel="stylesheet" href="css/styles.css" />
     <style>
       /* Fondo de pantalla para index en todos los bloques */
       body.wallpaper {
-        background: url('assets/images/origami_01.png') center center / cover fixed no-repeat !important;
+        background: url('assets/images/merkaba_02.png') center center / auto fixed no-repeat !important;
         color: #ffffff;
       }
       /* Secciones transparentes para dejar ver el fondo */
@@ -22,25 +31,41 @@
       }
       /* Tarjetas (Diario de Emociones, Retos, Resumen) con degradado azul #007fcc */
       body.wallpaper .grid-3 article {
-        background: linear-gradient(135deg, #40a9e8, #007fcc) !important;
-        border-color: rgba(255,255,255,0.25) !important;
+        background: #ffffff !important;
+        border-color: rgba(0,0,0,0.1) !important;
       }
       /* Forzar textos en blanco para buena legibilidad */
-      body.wallpaper .site-header .brand,
-      body.wallpaper .site-nav a,
       body.wallpaper .hero h1,
       body.wallpaper .hero p,
-      body.wallpaper .grid-3 h2,
-      body.wallpaper .grid-3 p,
       body.wallpaper .site-footer {
         color: #ffffff !important;
       }
-      /* Cabecera en negrita */
-      body.wallpaper .site-nav a { font-weight: 700 !important; }
+      /* Pie de página en negro */
+      body.wallpaper .site-footer { color: #000000 !important; }
+      /* Hero (Bienvenido / Base ligera) en negro */
+      body.wallpaper .hero h1,
+      body.wallpaper .hero p { color: #000000 !important; }
+      /* Textos de los bloques (grid) en negro */
+      body.wallpaper .grid-3 h2,
+      body.wallpaper .grid-3 p { color: #000000 !important; }
+      /* Marca estilizada MiALMAnake */
+      .marca { display: inline-flex; gap: 0; font-weight: 800; line-height: 1.1; letter-spacing: 0.5px; }
+      .marca.mini { font-weight: 700; font-size: 1em; }
+      .marca .mi { color: #000000 !important; }
+      .marca .alma { color: #f59e0b !important; background: #fafafa; padding: 0.05em 0.15em; border-radius: 0.15em; }
+      .marca .nake { color: #000000 !important; }
+      /* Cabecera en negro */
+      body.wallpaper .site-header .brand,
+      body.wallpaper .site-nav a { color: #000000 !important; }
+      /* Cabecera sin negrita */
+      body.wallpaper .site-nav a { font-weight: normal !important; }
       /* Hover del menÃº principal */
       body.wallpaper .site-nav a:hover {
         color: #1c007a !important;
       }
+      /* Hover naranja para Características/Contacto */
+      .site-nav a[href="info.html"]:hover,
+      .site-nav a[href="info.html#contacto"]:hover { color: #f59e0b !important; }
       /* Hover de la marca (MiAlmanake) */
       body.wallpaper .site-header .brand:hover {
         color: #1c007a !important;
@@ -79,10 +104,9 @@
   <body class="wallpaper">
     <header class="site-header">
       <div class="container">
-        <a class="brand" href="#">MiAlmanake</a>
+        <a class="brand" href="#"><span class="marca" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span></a>
         <nav class="site-nav" aria-label="Principal">
           <ul>
-            <li><a href="#inicio">Inicio</a></li>
             <li><a href="info.html">Caracterí­sticas</a></li>
             <li><a href="info.html#contacto">Contacto</a></li>
           </ul>
@@ -93,7 +117,7 @@
     <main id="inicio">
       <section class="hero">
         <div class="container">
-          <h1>Bienvenido a MiAlmanake</h1>
+          <h1>Bienvenido a <span class="marca mini" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span></h1>
           <p>Base ligera para comenzar tu página web.</p>
           <div class="actions">
             <a class="btn primary" href="info.html">Ver más</a>
@@ -131,6 +155,17 @@
     </footer>
 
     <script src="js/main.js" defer></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        try {
+          const p = document.querySelector('.site-footer p');
+          const marcaHtml = '<span class="marca mini" aria-label="Mi ALMA nake"><span class="mi">Mi</span><span class="alma">ALMA</span><span class="nake">nake</span></span>';
+          if (p) { p.innerHTML = '&copy; 2025 ' + marcaHtml + ' los derechos reservados.'; }
+          if (document.title === 'Mi Sitio Web') document.title = 'MiALMAnake';
+          document.title = document.title.replace('MiAlmanake', 'MiALMAnake');
+        } catch {}
+      });
+    </script>
   </body>
   </html>
 

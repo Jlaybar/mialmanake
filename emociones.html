@@ -12,6 +12,14 @@
       .site-header .brand { color: #000 !important; }
       .site-nav a { color: #000 !important; font-weight: 700 !important; }
       .hero h1, .hero p { color: #000 !important; }
+      /* Fondo fijo blanco y texto oscuro para esta página */
+      body { background: #ffffff !important; color: #111827 !important; }
+      /* Header blanco como en retos + resalte amarillo */
+      .site-header { background: #ffffff !important; border-bottom-color: rgba(0,0,0,0.1) !important; }
+      .site-header .brand:hover { color: #fde047 !important; }
+      .site-nav a[href="index.html#inicio"]:hover,
+      .site-nav a[href="index.html#caracteristicas"]:hover,
+      .site-nav a[href="index.html#contacto"]:hover { color: #fde047 !important; }
     </style>
     <style>
       /* Marca estilizada MiALMAnake */
@@ -535,9 +543,6 @@
           const glow = hexToRgba(primary, 0.65);
           styleEl.textContent = `
             :root{ --primary: ${primary}; --primary-700: ${primary700}; }
-            body{ background: radial-gradient(1200px 1200px at 10% -10%, ${rad1}, transparent 60%),
-                          radial-gradient(1000px 1000px at 110% 0%, ${rad2}, transparent 50%),
-                          ${baseBg}; }
             .site-header{ background: ${headerBg}; border-bottom-color: ${borderTone}; }
             /* Hover dinámico en cabecera: marca y enlaces del menú */
             .site-header .brand:hover, .site-nav a:hover{ color: ${primary} !important; text-shadow: 0 0 8px ${glow}; }

@@ -170,7 +170,9 @@
       }
 
       // Paleta de emojis arrastrables (3 emociones)
-      const EMOJI_PALETTE = ["😀", "😐", "😢"];
+      const EMOJI_PALETTE = ["😀", "😐", "😞"];
+
+     
 
       // Emociones con color semántico
       const MOOD_COLORS = [
@@ -307,8 +309,8 @@
 
       // === Etiqueta textual para el emoticono ===
       function emojiMoodLabel(emoji) {
-        if (emoji === "😀") return "contento";
-        if (emoji === "😢") return "triste";
+        if (emoji === "😀") return "positivo";
+        if (emoji === "😞") return "negativo";
         return "neutro"; // por defecto (😐)
       }
 
@@ -341,22 +343,6 @@
       function RecordEditor({ record, onChange }) {
         return (
           <div className="flex flex-col gap-4">
-            {/* ¿CÓMO LA SIENTES? */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <label className="text-sm font-medium text-slate-700">¿CÓMO LA SIENTES?</label>
-              <div className="flex gap-2">
-                {EMOJI_PALETTE.map((em) => (
-                  <button
-                    key={em}
-                    className={`rounded-lg px-2 py-1 text-lg hover:bg-slate-100 ${record.emoji === em ? 'ring-2 ring-slate-400' : ''}`}
-                    onClick={() => onChange({ ...record, emoji: em })}
-                    type="button"
-                  >
-                    {em}
-                  </button>
-                ))}
-              </div>
-            </div>
 
             {/* ¿QUÉ SIENTES? */}
             <div className="flex flex-col gap-2">
@@ -372,6 +358,23 @@
                     title={m.name}
                   >
                     {m.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ¿CÓMO LO AFRONTAS? */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <label className="text-sm font-medium text-slate-700">¿CÓMO LO AFRONTAS? ¿en positvo? ¿en negativo? ¿neutro?</label>
+              <div className="flex gap-2">
+                {EMOJI_PALETTE.map((em) => (
+                  <button
+                    key={em}
+                    className={`rounded-lg px-2 py-1 text-lg hover:bg-slate-100 ${record.emoji === em ? 'ring-2 ring-slate-400' : ''}`}
+                    onClick={() => onChange({ ...record, emoji: em })}
+                    type="button"
+                  >
+                    {em}
                   </button>
                 ))}
               </div>

@@ -650,27 +650,8 @@
               <button onClick={goNext} className="rounded-2xl bg-white/80 px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-slate-200 hover:bg-white" style={{ color: '#111827' }}>Mes siguiente →</button>
             </div>
 
-            {/* Paleta + Resumen mensual */}
-            <div className="mx-auto mb-4 max-w-4xl grid gap-3 md:grid-cols-3">
-              {/* Paleta de emojis arrastrables */}
-              <div className="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200">
-                <div className="mb-1 px-1 text-xs font-medium text-slate-500">¿CÓMO LA SIENTES?</div>
-                <div className="flex flex-wrap gap-2">
-                  {EMOJI_PALETTE.map((em) => (
-                    <div
-                      key={em}
-                      draggable
-                      onDragStart={(e) => { setDragEmoji(em); e.dataTransfer.setData('text/plain', em); }}
-                      onDragEnd={() => setDragEmoji(null)}
-                      className={`cursor-grab select-none rounded-xl px-2 py-1 text-xl hover:bg-slate-100 ${dragEmoji === em ? 'ring-2 ring-slate-400' : ''}`}
-                      title="Arrastra al calendario"
-                    >
-                      {em}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
+            {/* Resumen mensual */}
+            <div className="mx-auto mb-4 max-w-4xl grid gap-3 md:grid-cols-2">
               {/* Resumen mensual por color */}
               <div className="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200">
                 <div className="mb-2 flex items-center justify-between">

@@ -12,6 +12,14 @@
       .site-header .brand { color: #000 !important; }
       .site-nav a { color: #000 !important; font-weight: 700 !important; }
       .hero h1, .hero p { color: #000 !important; }
+      /* Fondo fijo blanco y texto oscuro para esta página */
+      body { background: #ffffff !important; color: #111827 !important; }
+      /* Header blanco como en retos + resalte amarillo */
+      .site-header { background: #ffffff !important; border-bottom-color: rgba(0,0,0,0.1) !important; }
+      .site-header .brand:hover { color: #fde047 !important; }
+      .site-nav a[href="index.html#inicio"]:hover,
+      .site-nav a[href="index.html#caracteristicas"]:hover,
+      .site-nav a[href="index.html#contacto"]:hover { color: #fde047 !important; }
     </style>
     <style>
       /* Marca estilizada MiALMAnake */
@@ -162,7 +170,9 @@
       }
 
       // Paleta de emojis arrastrables (3 emociones)
-      const EMOJI_PALETTE = ["😀", "😐", "😢"];
+      const EMOJI_PALETTE = ["😀", "😐", "😞"];
+
+     
 
       // Emociones con color semántico
       const MOOD_COLORS = [
@@ -299,9 +309,9 @@
 
       // === Etiqueta textual para el emoticono ===
       function emojiMoodLabel(emoji) {
-        if (emoji === "😀") return "contento";
-        if (emoji === "😢") return "triste";
-        return "neutro"; // por defecto (😐)
+        if (emoji === "😀") return "positiva";
+        if (emoji === "😞") return "negativa";
+        return "neutra"; // por defecto (😐)
       }
 
       // === UI: Chips blancos reutilizables ===
@@ -333,22 +343,6 @@
       function RecordEditor({ record, onChange }) {
         return (
           <div className="flex flex-col gap-4">
-            {/* ¿CÓMO LA SIENTES? */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <label className="text-sm font-medium text-slate-700">¿CÓMO LA SIENTES?</label>
-              <div className="flex gap-2">
-                {EMOJI_PALETTE.map((em) => (
-                  <button
-                    key={em}
-                    className={`rounded-lg px-2 py-1 text-lg hover:bg-slate-100 ${record.emoji === em ? 'ring-2 ring-slate-400' : ''}`}
-                    onClick={() => onChange({ ...record, emoji: em })}
-                    type="button"
-                  >
-                    {em}
-                  </button>
-                ))}
-              </div>
-            </div>
 
             {/* ¿QUÉ SIENTES? */}
             <div className="flex flex-col gap-2">
@@ -364,6 +358,27 @@
                     title={m.name}
                   >
                     {m.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ¿CÓMO LO AFRONTAS? */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <label className="text-sm font-medium text-slate-700">
+                ¿CÓMO LO AFRONTAS?
+                <br />¿Con actitud positva, neutra o negativa ?  
+                <br /> ¿?
+              </label>
+              <div className="flex gap-2">
+                {EMOJI_PALETTE.map((em) => (
+                  <button
+                    key={em}
+                    className={`rounded-lg px-2 py-1 text-lg hover:bg-slate-100 ${record.emoji === em ? 'ring-2 ring-slate-400' : ''}`}
+                    onClick={() => onChange({ ...record, emoji: em })}
+                    type="button"
+                  >
+                    {em}
                   </button>
                 ))}
               </div>
@@ -535,12 +550,9 @@
           const glow = hexToRgba(primary, 0.65);
           styleEl.textContent = `
             :root{ --primary: ${primary}; --primary-700: ${primary700}; }
-            body{ background: radial-gradient(1200px 1200px at 10% -10%, ${rad1}, transparent 60%),
-                          radial-gradient(1000px 1000px at 110% 0%, ${rad2}, transparent 50%),
-                          ${baseBg}; }
             .site-header{ background: ${headerBg}; border-bottom-color: ${borderTone}; }
-            /* Hover dinámico en cabecera: marca y enlaces del menú */
-            .site-header .brand:hover, .site-nav a:hover{ color: ${primary} !important; text-shadow: 0 0 8px ${glow}; }
+            /* Hover dinámico en cabecera solo para la marca (no enlaces) */
+            .site-header .brand:hover{ color: ${primary} !important; text-shadow: 0 0 8px ${glow}; }
             .grid-3 article{ border-color: ${borderTone}; }
             .btn.primary{ background: linear-gradient(135deg, ${primary}, ${primary700}); }
             .site-footer{ border-top-color: ${borderTone}; }
@@ -638,27 +650,8 @@
               <button onClick={goNext} className="rounded-2xl bg-white/80 px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-slate-200 hover:bg-white" style={{ color: '#111827' }}>Mes siguiente →</button>
             </div>
 
-            {/* Paleta + Resumen mensual */}
-            <div className="mx-auto mb-4 max-w-4xl grid gap-3 md:grid-cols-3">
-              {/* Paleta de emojis arrastrables */}
-              <div className="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200">
-                <div className="mb-1 px-1 text-xs font-medium text-slate-500">¿CÓMO LA SIENTES?</div>
-                <div className="flex flex-wrap gap-2">
-                  {EMOJI_PALETTE.map((em) => (
-                    <div
-                      key={em}
-                      draggable
-                      onDragStart={(e) => { setDragEmoji(em); e.dataTransfer.setData('text/plain', em); }}
-                      onDragEnd={() => setDragEmoji(null)}
-                      className={`cursor-grab select-none rounded-xl px-2 py-1 text-xl hover:bg-slate-100 ${dragEmoji === em ? 'ring-2 ring-slate-400' : ''}`}
-                      title="Arrastra al calendario"
-                    >
-                      {em}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
+            {/* Resumen mensual */}
+            <div className="mx-auto mb-4 max-w-4xl grid gap-3 md:grid-cols-2">
               {/* Resumen mensual por color */}
               <div className="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200">
                 <div className="mb-2 flex items-center justify-between">

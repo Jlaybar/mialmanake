@@ -66,6 +66,9 @@
       body.wallpaper main.retos .panel.calendar-panel .day-num { color: #111827 !important; }
       body.wallpaper main.retos .panel.calendar-panel .day.status-ok .day-num,
       body.wallpaper main.retos .panel.calendar-panel .day.status-fail .day-num { color: #ffffff !important; }
+
+      /* Nombre del reto dentro del día cuando no hay selección (negro) */
+      body.wallpaper main.retos .panel.calendar-panel .reto-nombre { color: #000000 !important; }
       
 
       /* Botones primarios como en index: amarillo por defecto, naranja al hover */
@@ -602,7 +605,11 @@
                       <div className={`absolute right-2 top-2 font-bold text-base day-num ${inside? 'text-slate-900':'text-slate-400'}`}>{day}</div>
                       {status==='ok' && <div className="mt-6 text-2xl">âœ…</div>}
                       {status==='fail' && <div className="mt-6 text-2xl">âŒ</div>}
-                      {!status && inside && <div className="mt-6 text-[11px] text-slate-300">Marca</div>}
+                      {!status && inside && (
+                        <div className="mt-6 w-full px-1 text-[11px] text-center truncate reto-nombre">
+                          {activo?.nombre || ''}
+                        </div>
+                      )}
                     </div>
                   );
                 })}

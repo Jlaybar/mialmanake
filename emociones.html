@@ -551,8 +551,8 @@
           styleEl.textContent = `
             :root{ --primary: ${primary}; --primary-700: ${primary700}; }
             .site-header{ background: ${headerBg}; border-bottom-color: ${borderTone}; }
-            /* Hover dinámico en cabecera: marca y enlaces del menú */
-            .site-header .brand:hover, .site-nav a:hover{ color: ${primary} !important; text-shadow: 0 0 8px ${glow}; }
+            /* Hover dinámico en cabecera solo para la marca (no enlaces) */
+            .site-header .brand:hover{ color: ${primary} !important; text-shadow: 0 0 8px ${glow}; }
             .grid-3 article{ border-color: ${borderTone}; }
             .btn.primary{ background: linear-gradient(135deg, ${primary}, ${primary700}); }
             .site-footer{ border-top-color: ${borderTone}; }
